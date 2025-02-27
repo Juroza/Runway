@@ -15,12 +15,14 @@ public class App  extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/HelloView.fxml"));
+        System.setProperty("apple.laf.useScreenMenuBar", "true");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainControlView.fxml"));
         Parent root = loader.load();
 
-        Scene scene = new Scene(root, 800, 200);
+        Scene scene = new Scene(root, 1980, 1080);
         stage.setScene(scene);
-        stage.setTitle("Real Information");
+        stage.setTitle("Runway");
+        scene.getStylesheets().add("styles.css");
         logger.info("beerus");
         stage.show();
     }
