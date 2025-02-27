@@ -4,18 +4,16 @@ import static java.lang.Math.*;
 
 public class Runway {
 
-  public Runway(String name, int TORA, int TODA, int ASDA, int LDA, int DisplacedThreshold, int Clearway, int Stopway, int RESA) {
+  public Runway(String name, int TORA, int TODA, int ASDA, int LDA) {
     this.name = name;
     this.TORA = TORA;
     this.TODA = TODA;
     this.ASDA = ASDA;
     this.LDA = LDA;
-    this.DisplacedThreshold = DisplacedThreshold;
-    this.Clearway = Clearway;
-    this.Stopway = Stopway;
-    this.RESA = max(240, RESA);
 
   }
+
+  private Obstacle obstacle = new Obstacle(0, 0);
 
   private String name;
 

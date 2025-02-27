@@ -2,13 +2,19 @@ package group50.model;
 
 public class Surface {
 
-  private int angle;
+  public Surface() {
+    float horiz = 50;
+    float vert = 1;
+    angle = horiz / vert;
+  }
 
-  public void setAngle(int a) {
+  private float angle;  //angle of lift/descent expressed as a ratio
+
+  public void setAngle(float a) {
     angle = a;
   }
 
-  public int getAngle() {
+  public float getAngle() {
     return angle;
   }
 
