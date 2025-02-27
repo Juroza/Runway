@@ -1,3 +1,25 @@
 .pane {
     -fx-background-color: black;
 }
+.pane-main {
+    -fx-background-color: green;
+}
+.stack-pane-background {
+    -fx-background-color: darkgrey;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: cover;
+}
+.runway-back {
+    -fx-fill: url('images/158.jpg');  /* Path to the texture image */
+    -fx-background-repeat: repeat;   /* This does not apply to Rectangle, remove it */
+    -fx-background-size: auto;       /* This does not apply to Rectangle, remove it */
+    -fx-width: 100%;                  /* Remove, Rectangle's width is set directly */
+    -fx-height: 100px;                /* Remove, height is set in the Rectangle tag */
+}
+
+#centerRectangle {
+    -fx-fill: url('images/158.jpg');  /* Path to the texture image */
+    -fx-width: 100%;
+    -fx-height: 100px;  /* Set the desired height */
+}
