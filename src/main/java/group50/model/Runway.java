@@ -1,4 +1,4 @@
-package group50.controller;
+package group50.model;
 
 import static java.lang.Math.*;
 
