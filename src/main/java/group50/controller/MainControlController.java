@@ -138,13 +138,22 @@ public class MainControlController  implements Initializable  {
         }
     }
     private void reestControlPanel(){
-        showToraToggle.setSelected(true);
-        showResaToggle.setSelected(true);
-        showTodaToggle.setSelected(true);
-        showLdaToggle.setSelected(true);
-        showAsdaToggle.setSelected(true);
+        showToraToggle.setSelected(false);
+        showResaToggle.setSelected(false);
+        showTodaToggle.setSelected(false);
+        showLdaToggle.setSelected(false);
+        showAsdaToggle.setSelected(false);
+        overlayRunThrough();
 
     }
+    private void overlayRunThrough(){
+        handleAsdaOverlayShow();
+        handleLdaOverlayShow();
+        handleResaOverlayShow();
+        handleTodaOverlayShow();
+        handleToraOverlayShow();
+    }
+
 
 
 
@@ -159,6 +168,7 @@ public class MainControlController  implements Initializable  {
         viewContainer.getChildren().add(runwayGroup);
 
         loadTopDownView();
+        overlayRunThrough();
 
 
 
