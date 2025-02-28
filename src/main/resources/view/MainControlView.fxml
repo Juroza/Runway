@@ -103,7 +103,7 @@
                      <content>
                         <VBox fx:id="scrollPaneVbox" prefHeight="368.0" prefWidth="167.0" spacing="10.0" style="-fx-background-color: darkgray;">
                            <children>
-                              <ComboBox fx:id="viewTypeSelector"  onAction="#handleViewTypeSelection" prefWidth="150.0" promptText="View Type">
+                              <ComboBox fx:id="viewTypeSelector" onAction="#handleViewTypeSelection" prefWidth="150.0" promptText="View Type">
                                   <items>
                                       <!-- Create an observable list factory for the combo box items -->
                                       <FXCollections fx:factory="observableArrayList">
@@ -126,11 +126,11 @@
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <RadioButton fx:id="showResaToggle" mnemonicParsing="false" onAction="#handleResaOverlayShow" selected="true" text="RESA" GridPane.rowIndex="2" />
-                                    <RadioButton fx:id="showToraToggle" mnemonicParsing="false" onAction="#handleToraOverlayShow" selected="true" text="TORA" />
-                                    <RadioButton fx:id="showTodaToggle" mnemonicParsing="false" onAction="#handleTodaOverlayShow" selected="true" text="TODA" GridPane.columnIndex="1" />
-                                    <RadioButton fx:id="showLdaToggle" mnemonicParsing="false" onAction="#handleLdaOverlayShow" selected="true" text="LDA" GridPane.rowIndex="1" />
-                                    <RadioButton fx:id="showAsdaToggle" mnemonicParsing="false" onAction="#handleAsdaOverlayShow" selected="true" text="ASDA" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <RadioButton fx:id="showResaToggle" mnemonicParsing="false" onAction="#handleResaOverlayShow" text="RESA" GridPane.rowIndex="2" />
+                                    <RadioButton fx:id="showToraToggle" mnemonicParsing="false" onAction="#handleToraOverlayShow" text="TORA" />
+                                    <RadioButton fx:id="showTodaToggle" mnemonicParsing="false" onAction="#handleTodaOverlayShow" text="TODA" GridPane.columnIndex="1" />
+                                    <RadioButton fx:id="showLdaToggle" mnemonicParsing="false" onAction="#handleLdaOverlayShow" text="LDA" GridPane.rowIndex="1" />
+                                    <RadioButton fx:id="showAsdaToggle" mnemonicParsing="false" onAction="#handleAsdaOverlayShow" text="ASDA" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                                  </children>
                               </GridPane>
                               <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="165.0" text="Add Obstacle" />
