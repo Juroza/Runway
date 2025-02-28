@@ -15,13 +15,15 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 
 public class RunwayRenderer {
-    public static final double layerOpacity = 0.2;
+    public static final double layerOpacity = 0.3;
+    public static final int SIDE_ON_GROUND_WIDTH = 600;
     Runway runway;
     static Paint TORA= Color.DEEPSKYBLUE;
     static Paint TODA= Color.CHARTREUSE;
     static Paint RESA= Color.RED;
     static Paint LDA= Color.MOCCASIN;
     static Paint ASDA= Color.ORANGE;
+
 
 
     public static List<Node> generateTopDownRunway(Runway runwayInput ){
@@ -105,7 +107,7 @@ public class RunwayRenderer {
                 runwayImage.getHeight(),       // The repeating tile height
                 false                         // Use absolute coordinates (not proportional)
         );
-        Rectangle runwayRect= new Rectangle(runwayInput.getLength()*10,60);
+        Rectangle runwayRect= new Rectangle(runwayInput.getLength()*10, SIDE_ON_GROUND_WIDTH);
         runwayRect.setFill(runwayPattern);
 
         Image concreteImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/conc2.jpg")));
@@ -116,7 +118,7 @@ public class RunwayRenderer {
                 concreteImage.getHeight(),       // The repeating tile height
                 false                         // Use absolute coordinates (not proportional)
         );
-        Rectangle stopwayRect= new Rectangle(runwayInput.getLength()*10+runwayInput.getStopway()*10*2,60);
+        Rectangle stopwayRect= new Rectangle(runwayInput.getLength()*10+runwayInput.getStopway()*10*2, SIDE_ON_GROUND_WIDTH);
         stopwayRect.setFill(concretePattern);
         Image grassImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/gg.jpeg")));
         ImagePattern grassPattern = new ImagePattern(
@@ -126,16 +128,31 @@ public class RunwayRenderer {
                 grassImage.getHeight(),       // The repeating tile height
                 false                         // Use absolute coordinates (not proportional)
         );
-        Rectangle grassArea= new Rectangle(runwayInput.getLength()*10*2,60);
+
+        Rectangle grassArea= new Rectangle(runwayInput.getLength()*10*2, SIDE_ON_GROUND_WIDTH);
         grassArea.setFill(grassPattern);
-        runwayRect.setId("runway");
-        stopwayRect.setId("stopway");
-        grassArea.setId("grass");
+        Image skyboxImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/sky2.png")));
+        ImagePattern skyBoxPattern = new ImagePattern(
+                skyboxImage,
+                0, 0,         // Start from top-left
+                1, 1,         // Scale it to cover the full rectangle (proportional)
+                true          // Use proportional scaling
+        );
+
+        Rectangle skyBoxRect= new Rectangle(grassArea.getWidth(), SIDE_ON_GROUND_WIDTH*30);
+        skyBoxRect.setFill(skyBoxPattern);
+
         runwayRect.setLayoutX((grassArea.getWidth() - runwayRect.getWidth()) / 2);
         runwayRect.setLayoutY((grassArea.getHeight() - runwayRect.getHeight()) / 2);
         stopwayRect.setLayoutX(runwayRect.getLayoutX()-runwayInput.getStopway()*10);
         stopwayRect.setLayoutY(runwayRect.getLayoutY());
-        objects.addAll(Arrays.asList(grassArea,stopwayRect,runwayRect));
+        skyBoxRect.setLayoutX(grassArea.getLayoutX());
+        skyBoxRect.setLayoutY(grassArea.getLayoutY()-skyBoxRect.getHeight());
+        objects.addAll(Arrays.asList(skyBoxRect,grassArea,stopwayRect,runwayRect));
+        runwayRect.setId("runway");
+        stopwayRect.setId("stopway");
+        grassArea.setId("grass");
+        skyBoxRect.setId("skyBox");
         return objects;
     }
 }
