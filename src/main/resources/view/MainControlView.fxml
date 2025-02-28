@@ -103,7 +103,7 @@
                      <content>
                         <VBox fx:id="scrollPaneVbox" prefHeight="368.0" prefWidth="167.0" spacing="10.0" style="-fx-background-color: darkgray;">
                            <children>
-                              <ComboBox fx:id="viewTypeSelector" prefWidth="150.0" promptText="View Type">
+                              <ComboBox fx:id="viewTypeSelector"  onAction="#handleViewTypeSelection" prefWidth="150.0" promptText="View Type">
                                   <items>
                                       <!-- Create an observable list factory for the combo box items -->
                                       <FXCollections fx:factory="observableArrayList">

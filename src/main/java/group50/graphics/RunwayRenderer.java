@@ -24,7 +24,7 @@ public class RunwayRenderer {
     static Paint ASDA= Color.ORANGE;
 
 
-    public static List<Node> generateTopDownRunway(Runway runwayinput ){
+    public static List<Node> generateTopDownRunway(Runway runwayInput ){
         List<Node> objects = new ArrayList<>();
         Image runwayImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/158.jpg")));
         ImagePattern runwayPattern = new ImagePattern(
@@ -34,7 +34,7 @@ public class RunwayRenderer {
                 runwayImage.getHeight(),       // The repeating tile height
                 false                         // Use absolute coordinates (not proportional)
         );
-        Rectangle runwayRect= new Rectangle(runwayinput.getLength()*10,600);
+        Rectangle runwayRect= new Rectangle(runwayInput.getLength()*10,600);
         runwayRect.setFill(runwayPattern);
 
         Image concreteImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/conc2.jpg")));
@@ -45,7 +45,7 @@ public class RunwayRenderer {
                 concreteImage.getHeight(),       // The repeating tile height
                 false                         // Use absolute coordinates (not proportional)
         );
-        Rectangle stopwayRect= new Rectangle(runwayinput.getLength()*10+runwayinput.getStopway()*10*2,600);
+        Rectangle stopwayRect= new Rectangle(runwayInput.getLength()*10+runwayInput.getStopway()*10*2,600);
         stopwayRect.setFill(concretePattern);
         Image grassImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/gg.jpeg")));
         ImagePattern grassPattern = new ImagePattern(
@@ -55,24 +55,24 @@ public class RunwayRenderer {
                 grassImage.getHeight(),       // The repeating tile height
                 false                         // Use absolute coordinates (not proportional)
         );
-        Ellipse grassArea= new Ellipse(runwayinput.getLength()*10*2,600*50);
+        Ellipse grassArea= new Ellipse(runwayInput.getLength()*10*2,600*50);
         grassArea.setFill(grassPattern);
 
-        Rectangle toraRect= new Rectangle(runwayinput.getTORA()*10,600, TORA);
+        Rectangle toraRect= new Rectangle(runwayInput.getTORA()*10,600, TORA);
         toraRect.setOpacity(layerOpacity);
-        Rectangle todaRect= new Rectangle(runwayinput.getTODA()*10,600, TODA);
+        Rectangle todaRect= new Rectangle(runwayInput.getTODA()*10,600, TODA);
         todaRect.setOpacity(layerOpacity);
-        Rectangle resaRect= new Rectangle(runwayinput.getRESA()*10,600, RESA);
+        Rectangle resaRect= new Rectangle(runwayInput.getRESA()*10,600, RESA);
         resaRect.setOpacity(layerOpacity);
-        Rectangle ldaRect= new Rectangle(runwayinput.getLDA()*10,600, LDA);
+        Rectangle ldaRect= new Rectangle(runwayInput.getLDA()*10,600, LDA);
         ldaRect.setOpacity(layerOpacity);
-        Rectangle asdaRect= new Rectangle(runwayinput.getASDA()*10,600, ASDA);
+        Rectangle asdaRect= new Rectangle(runwayInput.getASDA()*10,600, ASDA);
         asdaRect.setOpacity(layerOpacity);
 
         runwayRect.setLayoutX(grassArea.getCenterX() - runwayRect.getWidth() / 2);
         runwayRect.setLayoutY(grassArea.getCenterY() - runwayRect.getHeight() / 2);
 
-        stopwayRect.setLayoutX(runwayRect.getLayoutX()-runwayinput.getStopway()*10);
+        stopwayRect.setLayoutX(runwayRect.getLayoutX()-runwayInput.getStopway()*10);
         stopwayRect.setLayoutY(runwayRect.getLayoutY());
         toraRect.setLayoutX(runwayRect.getLayoutX());
         toraRect.setLayoutY(runwayRect.getLayoutY());
@@ -94,5 +94,48 @@ public class RunwayRenderer {
 
         return objects;
 
+    }
+    public static List<Node> generateSideOnRunway(Runway runwayInput){
+        List<Node> objects = new ArrayList<>();
+        Image runwayImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/tarmac.jpg")));
+        ImagePattern runwayPattern = new ImagePattern(
+                runwayImage,
+                0, 0,                         // Pattern anchor at top-left
+                runwayImage.getWidth(),        // The repeating tile width
+                runwayImage.getHeight(),       // The repeating tile height
+                false                         // Use absolute coordinates (not proportional)
+        );
+        Rectangle runwayRect= new Rectangle(runwayInput.getLength()*10,60);
+        runwayRect.setFill(runwayPattern);
+
+        Image concreteImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/conc2.jpg")));
+        ImagePattern concretePattern = new ImagePattern(
+                concreteImage,
+                0, 0,                         // Pattern anchor at top-left
+                concreteImage.getWidth(),        // The repeating tile width
+                concreteImage.getHeight(),       // The repeating tile height
+                false                         // Use absolute coordinates (not proportional)
+        );
+        Rectangle stopwayRect= new Rectangle(runwayInput.getLength()*10+runwayInput.getStopway()*10*2,60);
+        stopwayRect.setFill(concretePattern);
+        Image grassImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/gg.jpeg")));
+        ImagePattern grassPattern = new ImagePattern(
+                grassImage,
+                0, 0,                         // Pattern anchor at top-left
+                grassImage.getWidth(),        // The repeating tile width
+                grassImage.getHeight(),       // The repeating tile height
+                false                         // Use absolute coordinates (not proportional)
+        );
+        Rectangle grassArea= new Rectangle(runwayInput.getLength()*10*2,60);
+        grassArea.setFill(grassPattern);
+        runwayRect.setId("runway");
+        stopwayRect.setId("stopway");
+        grassArea.setId("grass");
+        runwayRect.setLayoutX((grassArea.getWidth() - runwayRect.getWidth()) / 2);
+        runwayRect.setLayoutY((grassArea.getHeight() - runwayRect.getHeight()) / 2);
+        stopwayRect.setLayoutX(runwayRect.getLayoutX()-runwayInput.getStopway()*10);
+        stopwayRect.setLayoutY(runwayRect.getLayoutY());
+        objects.addAll(Arrays.asList(grassArea,stopwayRect,runwayRect));
+        return objects;
     }
 }
