@@ -45,7 +45,7 @@ public class RunwayRenderer {
                 concreteImage.getHeight(),       // The repeating tile height
                 false                         // Use absolute coordinates (not proportional)
         );
-        Rectangle stopwayRect= new Rectangle(runwayinput.getLength()*10+runwayinput.getStopway()*2,600);
+        Rectangle stopwayRect= new Rectangle(runwayinput.getLength()*10+runwayinput.getStopway()*10*2,600);
         stopwayRect.setFill(concretePattern);
         Image grassImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/gg.jpeg")));
         ImagePattern grassPattern = new ImagePattern(
@@ -83,8 +83,14 @@ public class RunwayRenderer {
         asdaRect.setLayoutX(runwayRect.getLayoutX());
         asdaRect.setLayoutY(runwayRect.getLayoutY());
         objects.addAll(Arrays.asList(grassArea, stopwayRect, runwayRect, ldaRect, toraRect, todaRect, asdaRect));
-
-
+        runwayRect.setId("runway");
+        stopwayRect.setId("stopway");
+        grassArea.setId("grass");
+        toraRect.setId("tora");
+        todaRect.setId("toda");
+        resaRect.setId("resa");
+        ldaRect.setId("lda");
+        asdaRect.setId("asda");
 
         return objects;
 
