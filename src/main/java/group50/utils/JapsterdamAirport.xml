@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Airport name="Japsterdam Airport">
+    <Runways>
+        <Runway>
+            <Name>09L</Name>
+            <Length>3500</Length>
+            <StripLength>3700</StripLength>
+            <Stopway>200</Stopway>
+            <Clearway>400</Clearway>
+            <DisplacedThreshold>300</DisplacedThreshold>
+            <RESA>240</RESA>
+            <BlastProtection>500</BlastProtection>
+            <ClearedAndGradedArea>
+                <Width>150</Width>
+                <LengthBeyondRunway>150</LengthBeyondRunway>
+            </ClearedAndGradedArea>
+            <DeclaredDistances>
+                <TORA>3500</TORA>
+                <TODA>3900</TODA>
+                <ASDA>3700</ASDA>
+                <LDA>3200</LDA>
+            </DeclaredDistances>
+            <SurfaceSlopes>
+                <ALS>50:1</ALS>
+                <TOCS>50:1</TOCS>
+            </SurfaceSlopes>
+        </Runway>
+
+        <Runway>
+            <Name>27R</Name>
+            <Length>3200</Length>
+            <StripLength>3400</StripLength>
+            <Stopway>150</Stopway>
+            <Clearway>350</Clearway>
+            <DisplacedThreshold>200</DisplacedThreshold>
+            <RESA>240</RESA>
+            <ClearedAndGradedArea>
+                <Width>140</Width>
+                <LengthBeyondRunway>150</LengthBeyondRunway>
+            </ClearedAndGradedArea>
+            <BlastProtection>389</BlastProtection>
+            <DeclaredDistances>
+                <TORA>3200</TORA>
+                <TODA>3550</TODA>
+                <ASDA>3350</ASDA>
+                <LDA>3000</LDA>
+            </DeclaredDistances>
+            <SurfaceSlopes>
+                <ALS>50:1</ALS>
+                <TOCS>50:1</TOCS>
+            </SurfaceSlopes>
+        </Runway>
+    </Runways>
+</Airport>
+

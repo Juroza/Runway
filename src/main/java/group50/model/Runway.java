@@ -24,6 +24,7 @@ public class Runway {
     this.TOCS = new Surface();  //assumes plane's angle of ascent is 50:1
 
   }
+  public Runway(){};
 
   private Obstacle obstacle = new Obstacle(0, 0);
 
@@ -162,4 +163,11 @@ public class Runway {
   }
 
 
+  public void setLength(int length) {
+    this.length=length;
+  }
+
+  public void setName(String name) {
+    this.name=name;
+  }
 }

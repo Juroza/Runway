@@ -49,6 +49,11 @@ public class MainControlController  implements Initializable  {
     private double mouseAnchorY;
     private double initialTranslateX;
     private double initialTranslateY;
+    private double initialTranslateXStore;
+    private double initialTranslateYStore;
+    private double initialScaleX;
+    private double initialScaleY;
+
     List<Node> objs= new ArrayList<>();
 
     // The group that will hold rectangles (grass + runway)
@@ -101,6 +106,19 @@ public class MainControlController  implements Initializable  {
             }
         }
     }
+    public void storeInitialCameraPosition() {
+        initialTranslateXStore = runwayGroup.getTranslateX();
+        initialTranslateYStore = runwayGroup.getTranslateY();
+        initialScaleX = runwayGroup.getScaleX();
+        initialScaleY = runwayGroup.getScaleY();
+    }
+    public void resetCameraPosition() {
+        runwayGroup.setTranslateX(initialTranslateXStore);
+        runwayGroup.setTranslateY(initialTranslateYStore);
+        runwayGroup.setScaleX(initialScaleX);
+        runwayGroup.setScaleY(initialScaleY);
+    }
+
 
     @FXML
     public void handleRunwaySelectorInput(){
@@ -110,9 +128,11 @@ public class MainControlController  implements Initializable  {
     public void handleViewTypeSelection(){
         String type= viewTypeSelector.getSelectionModel().getSelectedItem();
         if(type.equals("Top Down")){
+            resetCameraPosition();
             loadTopDownView();
             reestControlPanel();
         } else if (type.equals("Side on")) {
+            resetCameraPosition();
             loadSideOnView();
             reestControlPanel();
         }
@@ -139,6 +159,7 @@ public class MainControlController  implements Initializable  {
         viewContainer.getChildren().add(runwayGroup);
 
         loadTopDownView();
+
 
 
         viewContainer.setOnMousePressed(event -> {
@@ -204,6 +225,10 @@ public class MainControlController  implements Initializable  {
             runwayGroup.setTranslateX(runwayGroup.getTranslateX() + deltaX);
             runwayGroup.setTranslateY(runwayGroup.getTranslateY() + deltaY);
         });
+        viewContainer.setOnScroll(event -> {
+            runwayGroup.setTranslateX(runwayGroup.getTranslateX() + event.getDeltaX());
+            runwayGroup.setTranslateY(runwayGroup.getTranslateY() + event.getDeltaY());
+        });
 
 
     }
@@ -212,6 +237,7 @@ public class MainControlController  implements Initializable  {
     private void loadTopDownView() {
         // Clear any existing shapes from the group
         runwayGroup.getChildren().clear();
+
        objs= RunwayRenderer.generateTopDownRunway(runwayList.get(0));
         runwayGroup.getChildren().addAll(objs);
         runwayGroupStore.getChildren().addAll(RunwayRenderer.generateTopDownRunway(runwayList.get(0)));
@@ -224,6 +250,7 @@ public class MainControlController  implements Initializable  {
         Ellipse grassArea = (Ellipse) objs.get(0);
         runwayGroup.setTranslateX(-grassArea.getCenterX() + (windowWidth/ 2));
         runwayGroup.setTranslateY(-grassArea.getCenterY() + windowHeight/ 2);
+        storeInitialCameraPosition();
     }
     private void loadSideOnView() {
         // Clear any existing shapes from the group
@@ -237,9 +264,17 @@ public class MainControlController  implements Initializable  {
         runwayGroup.setTranslateY(0);
         double windowWidth = 800;
         double windowHeight = 600;
-        Rectangle grassArea = (Rectangle) objs.get(0);
-        runwayGroup.setTranslateX(-(grassArea.getWidth()/2) + (windowWidth/ 2));
-        runwayGroup.setTranslateY(-(grassArea.getHeight()/2) + windowHeight/ 2);
+
+// Get the runway instead of grass
+        Rectangle runwayRect = (Rectangle) runwayGroup.lookup("#runway");
+
+// Compute the runway’s center in its parent
+        double runwayCenterX = (runwayRect.getWidth() / 2);
+        double runwayCenterY = (runwayRect.getHeight() / 2);
+
+// Translate so the camera centers on the runway
+        runwayGroup.setTranslateX(-runwayCenterX + (windowWidth / 2));
+        runwayGroup.setTranslateY(-runwayCenterY + (windowHeight / 2));
 
     }
 
