@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 public class MainControlController  implements Initializable  {
     @FXML private Pane runwayView;
     @FXML private ComboBox<String> runwaySelector;
+    @FXML private ComboBox<String> viewTypeSelector;
     List<Runway> runwayList;
 
     @FXML
@@ -105,7 +106,25 @@ public class MainControlController  implements Initializable  {
     public void handleRunwaySelectorInput(){
         System.out.println("aoifnoaefinwopfinaow 11");
     }
+    @FXML
+    public void handleViewTypeSelection(){
+        String type= viewTypeSelector.getSelectionModel().getSelectedItem();
+        if(type.equals("Top Down")){
+            loadTopDownView();
+            reestControlPanel();
+        } else if (type.equals("Side on")) {
+            loadSideOnView();
+            reestControlPanel();
+        }
+    }
+    private void reestControlPanel(){
+        showToraToggle.setSelected(true);
+        showResaToggle.setSelected(true);
+        showTodaToggle.setSelected(true);
+        showLdaToggle.setSelected(true);
+        showAsdaToggle.setSelected(true);
 
+    }
 
 
 
@@ -115,6 +134,7 @@ public class MainControlController  implements Initializable  {
         runwayList= new ArrayList<Runway>();
         Runway run1= new Runway("runner",3000,3000,60,50,0,60);
         runwayList.add(run1);
+        viewTypeSelector.getSelectionModel().select(0);
 
         viewContainer.getChildren().add(runwayGroup);
 
@@ -204,6 +224,23 @@ public class MainControlController  implements Initializable  {
         Ellipse grassArea = (Ellipse) objs.get(0);
         runwayGroup.setTranslateX(-grassArea.getCenterX() + (windowWidth/ 2));
         runwayGroup.setTranslateY(-grassArea.getCenterY() + windowHeight/ 2);
+    }
+    private void loadSideOnView() {
+        // Clear any existing shapes from the group
+        runwayGroup.getChildren().clear();
+        objs= RunwayRenderer.generateSideOnRunway(runwayList.get(0));
+        runwayGroup.getChildren().addAll(objs);
+        runwayGroupStore.getChildren().addAll(RunwayRenderer.generateTopDownRunway(runwayList.get(0)));
+
+
+        runwayGroup.setTranslateX(0);
+        runwayGroup.setTranslateY(0);
+        double windowWidth = 800;
+        double windowHeight = 600;
+        Rectangle grassArea = (Rectangle) objs.get(0);
+        runwayGroup.setTranslateX(-(grassArea.getWidth()/2) + (windowWidth/ 2));
+        runwayGroup.setTranslateY(-(grassArea.getHeight()/2) + windowHeight/ 2);
+
     }
 
 
