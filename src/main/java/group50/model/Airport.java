@@ -13,7 +13,7 @@ public class Airport {
   private List<Runway> runways;
 
   public void addRunway(String name, int TORA, int TODA, int ASDA, int LDA) {
-    runways.add(new Runway(name, TORA, TODA, ASDA, LDA));
+    runways.add(new Runway(name, TORA, TODA, ASDA, LDA,1,1));
   }
 
 }
