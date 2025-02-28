@@ -1,7 +1,10 @@
 package group50.controller;
 
+import group50.graphics.RunwayRenderer;
+import group50.model.Runway;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
@@ -12,15 +15,19 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.Group;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 public class MainControlController  implements Initializable  {
     @FXML private Pane runwayView;
     @FXML private ComboBox<String> runwaySelector;
+    List<Runway> runwayList;
 
     @FXML
     private Pane viewContainer;
@@ -36,6 +43,9 @@ public class MainControlController  implements Initializable  {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        runwayList= new ArrayList<Runway>();
+        Runway run1= new Runway("runner",3000,3000,60,50,0,60);
+        runwayList.add(run1);
 
         viewContainer.getChildren().add(runwayGroup);
 
@@ -113,52 +123,19 @@ public class MainControlController  implements Initializable  {
     private void loadTopDownView() {
         // Clear any existing shapes from the group
         runwayGroup.getChildren().clear();
-        Image grassImage = new Image(
-                getClass().getResource("/images/gg.jpeg").toExternalForm()
-        );
-        Image runwayImage = new Image(
-                getClass().getResource("/images/158.jpg").toExternalForm()
-        );
-
-        ImagePattern grassPattern = new ImagePattern(
-                grassImage,
-                0, 0,                         // Pattern anchor at top-left
-                grassImage.getWidth(),        // The repeating tile width
-                grassImage.getHeight(),       // The repeating tile height
-                false                         // Use absolute coordinates (not proportional)
-        );
-        ImagePattern runwayPattern = new ImagePattern(
-                runwayImage,
-                0, 0,                         // Pattern anchor at top-left
-                runwayImage.getWidth(),        // The repeating tile width
-                runwayImage.getHeight(),       // The repeating tile height
-                false                         // Use absolute coordinates (not proportional)
-        );
-        // Grass
-        Rectangle grassRect = new Rectangle(10000, 10000, Color.LIGHTGREEN);
-        grassRect.setFill(grassPattern);
-
-
-        Rectangle runwayRect = new Rectangle(7830, 600, Color.GRAY);
-        runwayRect.setFill(runwayPattern);
-
-        runwayRect.setLayoutX(grassRect.getWidth() / 2 - runwayRect.getWidth() / 2);
-        runwayRect.setLayoutY(grassRect.getHeight() / 2 - runwayRect.getHeight() / 2);
-
-
-
-        runwayGroup.getChildren().addAll(grassRect, runwayRect);
+        List<Node> objs= RunwayRenderer.generateTopDownRunway(runwayList.get(0));
+        runwayGroup.getChildren().addAll(objs);
 
 
         runwayGroup.setTranslateX(0);
         runwayGroup.setTranslateY(0);
         double windowWidth = 800;
         double windowHeight = 600;
-
-
-        runwayGroup.setTranslateX(-(grassRect.getWidth() / 2) + windowWidth / 2);
-        runwayGroup.setTranslateY(-(grassRect.getHeight() / 2) + windowHeight / 2);
+        Ellipse grassArea = (Ellipse) objs.get(0);
+        runwayGroup.setTranslateX(-grassArea.getCenterX() + (windowWidth/ 2));
+        runwayGroup.setTranslateY(-grassArea.getCenterY() + windowHeight/ 2);
     }
 
 
 }
+
