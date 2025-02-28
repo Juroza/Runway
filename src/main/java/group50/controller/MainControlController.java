@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.fxml.FXMLLoader;
@@ -31,15 +32,83 @@ public class MainControlController  implements Initializable  {
 
     @FXML
     private Pane viewContainer;
+    @FXML
+    private RadioButton showToraToggle;
+    @FXML
+    private RadioButton showTodaToggle;
+    @FXML
+    private RadioButton showResaToggle;
+    @FXML
+    private RadioButton showLdaToggle;
+    @FXML
+    private RadioButton showAsdaToggle;
 
     // For panning
     private double mouseAnchorX;
     private double mouseAnchorY;
     private double initialTranslateX;
     private double initialTranslateY;
+    List<Node> objs= new ArrayList<>();
 
     // The group that will hold rectangles (grass + runway)
     private Group runwayGroup = new Group();
+    private Group runwayGroupStore = new Group();
+    @FXML
+    public void handleToraOverlayShow() {
+        handleOverlayToggle("tora", showToraToggle);
+    }
+
+    @FXML
+    public void handleTodaOverlayShow() {
+        handleOverlayToggle("toda", showTodaToggle);
+    }
+
+    @FXML
+    public void handleResaOverlayShow() {
+        handleOverlayToggle("resa", showResaToggle);
+    }
+
+    @FXML
+    public void handleLdaOverlayShow() {
+        handleOverlayToggle("lda", showLdaToggle);
+    }
+
+    @FXML
+    public void handleAsdaOverlayShow() {
+        handleOverlayToggle("asda", showAsdaToggle);
+    }
+    private void handleOverlayToggle(String id, ToggleButton toggleButton) {
+        if (!toggleButton.isSelected()) {
+            // Remove the overlay
+            Node overlayNode = runwayGroup.lookup("#" + id);
+            if (overlayNode != null) {
+                if (runwayGroupStore.lookup("#" + id) == null) {
+                    runwayGroupStore.getChildren().add(overlayNode);
+                }
+                runwayGroup.getChildren().remove(overlayNode);
+            } else {
+                System.out.println("Node not found for removal: " + id);
+            }
+        } else {
+            // Add the overlay back
+            Node overlayNode = runwayGroupStore.lookup("#" + id);
+            if (overlayNode != null) {
+                overlayNode.setId(id); // Ensure ID is set before lookup
+                runwayGroup.getChildren().add(overlayNode);
+            } else {
+                System.out.println("Node not found for re-adding: " + id);
+            }
+        }
+    }
+
+    @FXML
+    public void handleRunwaySelectorInput(){
+        System.out.println("aoifnoaefinwopfinaow 11");
+    }
+
+
+
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -123,8 +192,9 @@ public class MainControlController  implements Initializable  {
     private void loadTopDownView() {
         // Clear any existing shapes from the group
         runwayGroup.getChildren().clear();
-        List<Node> objs= RunwayRenderer.generateTopDownRunway(runwayList.get(0));
+       objs= RunwayRenderer.generateTopDownRunway(runwayList.get(0));
         runwayGroup.getChildren().addAll(objs);
+        runwayGroupStore.getChildren().addAll(RunwayRenderer.generateTopDownRunway(runwayList.get(0)));
 
 
         runwayGroup.setTranslateX(0);
