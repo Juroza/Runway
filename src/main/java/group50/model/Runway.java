@@ -1,21 +1,39 @@
 package group50.model;
 
-import static java.lang.Math.*;
-
 public class Runway {
 
-  public Runway(String name, int TORA, int TODA, int ASDA, int LDA) {
+  public Runway(String name, int length, int stripLength, int stopway, int clearway, int displacedThreshold, int RESA) {
     this.name = name;
-    this.TORA = TORA;
-    this.TODA = TODA;
-    this.ASDA = ASDA;
-    this.LDA = LDA;
+    this.length = length;
+    this.stopway = stopway;
+    this.clearway = clearway; //clearway should be greater than stopway
+    this.TORA = length;
+    this.ASDA = ASDA + stopway;
+    this.TODA = length + clearway;
+
+    this.displacedThreshold = displacedThreshold;
+    this.LDA = length - displacedThreshold;
+
+    this.stripLength = stripLength;
+    this.stripEnd = stripLength - length;
+    this.RESA = RESA;
+
+    this.ALS = new Surface(); //assumes plane's angle of descent is 50:1
+    this.TOCS = new Surface();  //assumes plane's angle of ascent is 50:1
 
   }
 
   private Obstacle obstacle = new Obstacle(0, 0);
 
+  private Boolean hasObstacle() {
+    return obstacle.getHeight() != 0;
+  }
+
   private String name;
+
+  private int length;
+
+  private int stripLength;
 
   private int TORA; //take-off run available
 
@@ -25,15 +43,15 @@ public class Runway {
 
   private int LDA; //landing distance available
 
-  private int DisplacedThreshold; //can be used for take-off, but not landing
+  private int displacedThreshold; //can be used for take-off, but not landing
 
-  private int Clearway;  //beyond TORA, can be used for plane to climb to a certain height
+  private int clearway;  //beyond TORA, can be used for plane to climb to a certain height
 
-  private int Stopway;  //beyond TORA, can be used for an abandoned take-off
+  private int stopway;  //beyond TORA, can be used for an abandoned take-off
 
   private int RESA; //runway end safety area
 
-  private int StripEnd; //distance between runway and stopway
+  private int stripEnd; //distance between runway and stopway
 
   private int BlastProtection;  //safety distance behind aircraft
 
@@ -43,6 +61,14 @@ public class Runway {
 
   public String getName() {
     return name;
+  }
+
+  public int getLength() {
+    return length;
+  }
+
+  public int getStripLength() {
+    return stripLength;
   }
 
   public int getTODA() {
@@ -62,15 +88,15 @@ public class Runway {
   }
 
   public int getDisplacedThreshold() {
-    return DisplacedThreshold;
+    return displacedThreshold;
   }
 
   public int getClarway() {
-    return Clearway;
+    return clearway;
   }
 
   public int getStopway() {
-    return Stopway;
+    return stopway;
   }
 
   public int getRESA() {
@@ -78,7 +104,7 @@ public class Runway {
   }
 
   public int getStripEnd() {
-    return StripEnd;
+    return stripEnd;
   }
 
   public int getBlastProtection() {
@@ -91,6 +117,10 @@ public class Runway {
 
   public Surface getTOCS() {
     return TOCS;
+  }
+
+  public void setBlastProtection(int blastProtection) {
+    this.BlastProtection = blastProtection;
   }
 
 

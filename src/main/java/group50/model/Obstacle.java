@@ -15,4 +15,11 @@ public class Obstacle {
   private int distance;
 
 
+  public int getHeight() {
+    return height;
+  }
+
+  public int getDistance() {
+    return distance;
+  }
 }
