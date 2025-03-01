@@ -26,6 +26,7 @@ public class Runway {
   }
   public Runway(){};
 
+
   private Obstacle obstacle = new Obstacle(0, 0);
 
   private Boolean hasObstacle() {
@@ -170,4 +171,11 @@ public class Runway {
   public void setName(String name) {
     this.name=name;
   }
+
+  public void setter(Obstacle obstacle) {
+    this.obstacle = obstacle;
+
+    redeclareALL();
+  }
+
 }
