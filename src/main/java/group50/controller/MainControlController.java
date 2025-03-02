@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.FXML;
@@ -24,6 +25,7 @@ import javafx.fxml.Initializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 public class MainControlController  implements Initializable  {
     @FXML private Pane runwayView;
@@ -31,6 +33,11 @@ public class MainControlController  implements Initializable  {
     @FXML private ComboBox<String> viewTypeSelector;
     @FXML private RadioButton showCAGToggle;
     @FXML private RadioButton showClearwayToggle;
+    @FXML
+    private ImageView arrowImage;
+    private static final double MIN_SCALE = 0.0000001;
+    private static final double MAX_SCALE = 50000.0;
+
     List<Runway> runwayList;
 
     @FXML
@@ -45,6 +52,9 @@ public class MainControlController  implements Initializable  {
     private RadioButton showLdaToggle;
     @FXML
     private RadioButton showAsdaToggle;
+    @FXML
+    private RadioButton showALSToggle;
+
 
     // For panning
     private double mouseAnchorX;
@@ -78,6 +88,7 @@ public class MainControlController  implements Initializable  {
 
     @FXML
     public void handleLdaOverlayShow() {
+        System.out.println("joaeirjeoirf aoiefnoeinf");
         handleOverlayToggle("lda", showLdaToggle);
     }
 
@@ -85,12 +96,20 @@ public class MainControlController  implements Initializable  {
     public void handleAsdaOverlayShow() {
         handleOverlayToggle("asda", showAsdaToggle);
     }
+    @FXML
+    public void handleALSOverlayShow(){
+        System.out.println("OAFNOAEIPFNOEI");
+        handleOverlayToggle("als",showALSToggle);
+    }
+
     private void handleOverlayToggle(String id, ToggleButton toggleButton) {
         if (!toggleButton.isSelected()) {
             // Remove the overlay
             Node overlayNode = runwayGroup.lookup("#" + id);
             if (overlayNode != null) {
+                System.out.println("Is there");
                 if (runwayGroupStore.lookup("#" + id) == null) {
+                    System.out.println("Is there in store");
                     runwayGroupStore.getChildren().add(overlayNode);
                 }
                 runwayGroup.getChildren().remove(overlayNode);
@@ -155,6 +174,9 @@ public class MainControlController  implements Initializable  {
         showTodaToggle.setSelected(false);
         showLdaToggle.setSelected(false);
         showAsdaToggle.setSelected(false);
+        showCAGToggle.setSelected(false);
+        showClearwayToggle.setSelected(false);
+        showALSToggle.setSelected(false);
         overlayRunThrough();
 
     }
@@ -166,6 +188,7 @@ public class MainControlController  implements Initializable  {
         handleToraOverlayShow();
         handleCAGOverlayShow();
         handleClearwayOverlayShow();
+        handleALSOverlayShow();
     }
 
 
@@ -174,6 +197,8 @@ public class MainControlController  implements Initializable  {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        arrowImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/arrow.png"))));
+        arrowImage.setScaleX(2);
         runwayList= new ArrayList<Runway>();
         Runway run1= new Runway("runner",3000,3000,60,500,600,0,60);
         run1.setClearedAndGradedWidth(3500);
@@ -202,19 +227,21 @@ public class MainControlController  implements Initializable  {
             runwayGroup.setTranslateY(initialTranslateY + deltaY);
         });
         runwayGroup.setOnZoom(event -> {
-            // The pinch "zoom factor" from the gesture:
             double zoomFactor = event.getZoomFactor();
-
-
             Point2D pivotInGroup = runwayGroup.sceneToLocal(event.getSceneX(), event.getSceneY());
 
+            double newScaleX = runwayGroup.getScaleX() * zoomFactor;
+            double newScaleY = runwayGroup.getScaleY() * zoomFactor;
 
-            runwayGroup.setScaleX(runwayGroup.getScaleX() * zoomFactor);
-            runwayGroup.setScaleY(runwayGroup.getScaleY() * zoomFactor);
+            // Clamp to prevent negative or zero scale
+            // Clamp between min and max
+            newScaleX = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleX));
+            newScaleY = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleY));
 
+            runwayGroup.setScaleX(Math.max(MIN_SCALE, newScaleX));
+            runwayGroup.setScaleY(Math.max(MIN_SCALE, newScaleY));
 
             Point2D pivotInScene = runwayGroup.localToScene(pivotInGroup);
-
 
             double dx = event.getSceneX() - pivotInScene.getX();
             double dy = event.getSceneY() - pivotInScene.getY();
@@ -225,45 +252,57 @@ public class MainControlController  implements Initializable  {
             event.consume();
         });
 
+
         viewContainer.setOnScroll(event -> {
-            // Choose your zoom factor
-            double zoomFactor = 1.05;
-            if (event.getDeltaY() < 0) {
-                // Zoom out
-                zoomFactor = 1 / zoomFactor;
+            if (event.isControlDown()) {
+                double zoomFactor = event.getDeltaY() > 0 ? 1.05 : 0.95;
+                Point2D mouseInGroup = runwayGroup.sceneToLocal(event.getSceneX(), event.getSceneY());
+
+                double newScaleX = runwayGroup.getScaleX() * zoomFactor;
+                double newScaleY = runwayGroup.getScaleY() * zoomFactor;
+                // Clamp between min and max
+                newScaleX = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleX));
+                newScaleY = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleY));
+
+
+                // Clamp to prevent negative or zero scale
+                runwayGroup.setScaleX(Math.max(MIN_SCALE, newScaleX));
+                runwayGroup.setScaleY(Math.max(MIN_SCALE, newScaleY));
+
+                Point2D newMouseInScene = runwayGroup.localToScene(mouseInGroup);
+
+                double deltaX = event.getSceneX() - newMouseInScene.getX();
+                double deltaY = event.getSceneY() - newMouseInScene.getY();
+
+                runwayGroup.setTranslateX(runwayGroup.getTranslateX() + deltaX);
+                runwayGroup.setTranslateY(runwayGroup.getTranslateY() + deltaY);
+
+            } else {
+                // Panning with scroll
+                runwayGroup.setTranslateX(runwayGroup.getTranslateX() + event.getDeltaX());
+                runwayGroup.setTranslateY(runwayGroup.getTranslateY() + event.getDeltaY());
             }
-
-
-            Point2D mouseInGroup = runwayGroup.sceneToLocal(event.getSceneX(), event.getSceneY());
-
-
-            runwayGroup.setScaleX(runwayGroup.getScaleX() * zoomFactor);
-            runwayGroup.setScaleY(runwayGroup.getScaleY() * zoomFactor);
-
-
-            Point2D newMouseInScene = runwayGroup.localToScene(mouseInGroup);
-
-
-            double deltaX = event.getSceneX() - newMouseInScene.getX();
-            double deltaY = event.getSceneY() - newMouseInScene.getY();
-
-            // 5) Update the group's translation to compensate
-            runwayGroup.setTranslateX(runwayGroup.getTranslateX() + deltaX);
-            runwayGroup.setTranslateY(runwayGroup.getTranslateY() + deltaY);
+            event.consume();
         });
-        viewContainer.setOnScroll(event -> {
-            runwayGroup.setTranslateX(runwayGroup.getTranslateX() + event.getDeltaX());
-            runwayGroup.setTranslateY(runwayGroup.getTranslateY() + event.getDeltaY());
-        });
+
+
+
 
 
     }
 
 
     private void loadTopDownView() {
+        showToraToggle.setDisable(false);
+        showCAGToggle.setDisable(false);
+        showAsdaToggle.setDisable(false);
+        showTodaToggle.setDisable(false);
+        showClearwayToggle.setDisable(false);
+        showALSToggle.setDisable(true);
+        showResaToggle.setDisable(true);
         // Clear any existing shapes from the group
         runwayGroup.getChildren().clear();
-
+        runwayGroupStore.getChildren().clear();
        objs= RunwayRenderer.generateTopDownRunway(runwayList.get(0));
         runwayGroup.getChildren().addAll(objs);
         runwayGroupStore.getChildren().addAll(RunwayRenderer.generateTopDownRunway(runwayList.get(0)));
@@ -279,12 +318,21 @@ public class MainControlController  implements Initializable  {
         storeInitialCameraPosition();
     }
     private void loadSideOnView() {
+        showToraToggle.setDisable(true);
+        showCAGToggle.setDisable(true);
+        showAsdaToggle.setDisable(true);
+        showTodaToggle.setDisable(true);
+        showClearwayToggle.setDisable(true);
+        showALSToggle.setDisable(false);
+        showResaToggle.setDisable(false);
+
+
         // Clear any existing shapes from the group
         runwayGroup.getChildren().clear();
+        runwayGroupStore.getChildren().clear();
         objs= RunwayRenderer.generateSideOnRunway(runwayList.get(0));
         runwayGroup.getChildren().addAll(objs);
-        runwayGroupStore.getChildren().addAll(RunwayRenderer.generateTopDownRunway(runwayList.get(0)));
-
+        runwayGroupStore.getChildren().addAll(RunwayRenderer.generateSideOnRunway(runwayList.get(0)));
 
         runwayGroup.setTranslateX(0);
         runwayGroup.setTranslateY(0);
