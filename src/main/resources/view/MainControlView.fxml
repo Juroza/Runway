@@ -144,14 +144,14 @@
                               </GridPane>
                               <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="165.0" text="Add Obstacle" />
                                <Label text="Manual Runway Parameters Input" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
-                               <Label text="TORA (m)" />
-                               <TextField fx:id="toraInput" promptText="Enter TORA" />
-                               <Label text="TODA (m)" />
-                               <TextField fx:id="todaInput" promptText="Enter TODA" />
-                               <Label text="ASDA (m)" />
-                               <TextField fx:id="asdaInput" promptText="Enter ASDA" />
-                               <Label text="LDA (m)" />
-                               <TextField fx:id="ldaInput" promptText="Enter LDA" />
+                               <Label text="Length (m)" />
+                               <TextField fx:id="lengthInput" promptText="Enter Runway Length" />
+                               <Label text="Clearway Length (m)" />
+                               <TextField fx:id="clearwayInput" promptText="Enter Clearway Length" />
+                               <Label text="Stopway (m)" />
+                               <TextField fx:id="stopwayInput" promptText="Enter Stopway Length" />
+                               <Label text="Displaced Threshold (m)" />
+                               <TextField fx:id="displacedThresholdInput" promptText="Enter Displaced Threshold" />
                                <Button text="Apply Parameters" onAction="#handleApplyParameters" prefWidth="150" />
                            </children>
                         </VBox>
