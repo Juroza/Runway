@@ -204,10 +204,8 @@ public class Runway {
     this.name=name;
   }
 
-  public void setter(Obstacle obstacle) {
-    this.obstacle = obstacle;
-
-    redeclareALL();
+  public String toString() {
+    return name;
   }
 
 }

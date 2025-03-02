@@ -53,6 +53,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
 
 <VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group50.controller.MainControlController">
   <children>
@@ -154,6 +155,16 @@
                                  </children>
                               </GridPane>
                               <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="165.0" text="Add Obstacle" />
+                               <Label text="Manual Runway Parameters Input" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                               <Label text="Length (m)" />
+                               <TextField fx:id="lengthInput" promptText="Enter Runway Length" />
+                               <Label text="Clearway Length (m)" />
+                               <TextField fx:id="clearwayInput" promptText="Enter Clearway Length" />
+                               <Label text="Stopway (m)" />
+                               <TextField fx:id="stopwayInput" promptText="Enter Stopway Length" />
+                               <Label text="Displaced Threshold (m)" />
+                               <TextField fx:id="displacedThresholdInput" promptText="Enter Displaced Threshold" />
+                               <Button text="Apply Parameters" onAction="#handleApplyParameters" prefWidth="150" />
                            </children>
                         </VBox>
                      </content>
