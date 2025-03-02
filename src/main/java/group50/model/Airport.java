@@ -16,4 +16,7 @@ public class Airport {
     runways.add(new Runway(name, TORA, TODA, ASDA, LDA,clearwayWidth,clearwayHeight,1));
   }
 
+  public List<Runway> getRunways() {
+    return runways;
+  }
 }

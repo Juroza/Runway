@@ -97,7 +97,6 @@ public class MainControlController  implements Initializable  {
 
     @FXML
     public void handleLdaOverlayShow() {
-        System.out.println("joaeirjeoirf aoiefnoeinf");
         handleOverlayToggle("lda", showLdaToggle);
     }
 
@@ -107,7 +106,6 @@ public class MainControlController  implements Initializable  {
     }
     @FXML
     public void handleALSOverlayShow(){
-        System.out.println("OAFNOAEIPFNOEI");
         handleOverlayToggle("als",showALSToggle);
     }
 
@@ -116,9 +114,7 @@ public class MainControlController  implements Initializable  {
             // Remove the overlay
             Node overlayNode = runwayGroup.lookup("#" + id);
             if (overlayNode != null) {
-                System.out.println("Is there");
                 if (runwayGroupStore.lookup("#" + id) == null) {
-                    System.out.println("Is there in store");
                     runwayGroupStore.getChildren().add(overlayNode);
                 }
                 runwayGroup.getChildren().remove(overlayNode);
