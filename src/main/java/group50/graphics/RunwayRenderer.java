@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Ellipse;
+import javafx.scene.shape.Polygon;
 import javafx.scene.shape.Rectangle;
 
 public class RunwayRenderer {
@@ -153,17 +154,49 @@ public class RunwayRenderer {
         Rectangle skyBoxRect= new Rectangle(grassArea.getWidth(), SIDE_ON_GROUND_WIDTH*30);
         skyBoxRect.setFill(skyBoxPattern);
 
+        Rectangle ldaRect= new Rectangle(runwayInput.getLDA()*10,SIDE_ON_GROUND_WIDTH*10,LDA);
+        ldaRect.setOpacity(layerOpacity);
+        Rectangle resaRect= new Rectangle(runwayInput.getRESA()*10,SIDE_ON_GROUND_WIDTH*10,RESA);
+        resaRect.setOpacity(layerOpacity);
         runwayRect.setLayoutX((grassArea.getWidth() - runwayRect.getWidth()) / 2);
         runwayRect.setLayoutY((grassArea.getHeight() - runwayRect.getHeight()) / 2);
         stopwayRect.setLayoutX(runwayRect.getLayoutX()-runwayInput.getStopway()*10);
         stopwayRect.setLayoutY(runwayRect.getLayoutY());
         skyBoxRect.setLayoutX(grassArea.getLayoutX());
         skyBoxRect.setLayoutY(grassArea.getLayoutY()-skyBoxRect.getHeight());
-        objects.addAll(Arrays.asList(skyBoxRect,grassArea,stopwayRect,runwayRect));
+
+        resaRect.setLayoutX(stopwayRect.getLayoutX());
+        resaRect.setLayoutY(stopwayRect.getLayoutY()-resaRect.getHeight());
+        ldaRect.setLayoutX(runwayRect.getLayoutX());
+        ldaRect.setLayoutY(runwayRect.getLayoutY()-ldaRect.getHeight());
+        double alsStartX = runwayRect.getLayoutX();
+        double alsStartY = runwayRect.getLayoutY();
+        double alsLength = 3000;  // meters
+        double alsSlope = 5;     // 50:1
+        double alsHeight = alsLength / alsSlope;  // 60m vertical rise
+
+
+        Polygon alsTriangle = new Polygon();
+        alsTriangle.getPoints().addAll(
+                alsStartX, alsStartY,                                      // Start at runway start
+                alsStartX - alsLength, alsStartY - alsHeight,             // End of the slope (down and left)
+                alsStartX - alsLength, alsStartY                           // Bottom back to start level
+        );
+        alsTriangle.setFill(Color.RED);
+
+
+
+
+
+        objects.addAll(Arrays.asList(skyBoxRect,grassArea,stopwayRect,runwayRect,resaRect,ldaRect,alsTriangle));
+
         runwayRect.setId("runway");
         stopwayRect.setId("stopway");
         grassArea.setId("grass");
         skyBoxRect.setId("skyBox");
+        ldaRect.setId("lda");
+        resaRect.setId("resa");
+        alsTriangle.setId("als");
         return objects;
     }
 }

@@ -5,7 +5,7 @@
     -fx-background-color: green;
 }
 .stack-pane-background {
-    -fx-background-color: darkgrey;
+    -fx-background-color:rgb(211,211,218);
     -fx-background-repeat: no-repeat;
     -fx-background-position: center;
     -fx-background-size: cover;
@@ -24,11 +24,15 @@
     -fx-height: 100px;  /* Set the desired height */
 }
 .section-title {
+    -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
     -fx-font-size: 18px;
-    -fx-text-fill: #333333;
-
-    -fx-alignment: center-left;
+    -fx-font-weight: semi-bold;
+    -fx-text-fill: #4a4a4a; /* Soft dark gray */
+    -fx-padding: 6 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 3, 0, 0, 1);
+    -fx-alignment: center;
 }
+
 .rounded-radio-button {
     -fx-padding: 8 16;
     -fx-background-color: #f5f5f5;
@@ -52,34 +56,111 @@
     -fx-background-color: #eaeaea;
 }
 .modern-combo-box {
-    -fx-background-color: #f5f5f5;
-    -fx-border-color: #cccccc;
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #e0e0e0);
+    -fx-border-color: #b0b0b0;
     -fx-border-width: 1.5;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-padding: 2 6;
-    -fx-font-size: 14px;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 6 12;
+    -fx-font-size: 16px;
     -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
     -fx-text-fill: #333333;
     -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0, 0, 1);
 }
 
 .modern-combo-box:hover {
-    -fx-background-color: #eaeaea;
-    -fx-border-color: #aaaaaa;
+    -fx-background-color: linear-gradient(to bottom, #f0faff, #d0e9ff);
+    -fx-border-color: #7aaed6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 3, 0, 0, 2);
 }
 
 .modern-combo-box:focused {
-    -fx-border-color: #0078D7;
+    -fx-background-color: linear-gradient(to bottom, #bfe3ff, #7dbfff);
+    -fx-border-color: #4a90e2;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 3);
+}
+
+/* Dropdown items */
+.combo-box-popup .list-view {
     -fx-background-color: #ffffff;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1;
+    -fx-background-radius: 8;
 }
 
 .combo-box-popup .list-cell {
-    -fx-font-size: 14px;
     -fx-padding: 8;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
     -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
 }
 
 .combo-box-popup .list-cell:hover {
-    -fx-background-color: #e0e0e0;
+    -fx-background-color: #e0f3ff;
+}
+
+.wii-radio-button {
+    -fx-padding: 8 16;
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #e0e0e0);
+    -fx-border-color: #b0b0b0;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: #333333;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0, 0, 1);
+    -fx-cursor: hand;
+    -fx-alignment: CENTER;
+}
+
+.wii-radio-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #f0faff, #d0e9ff);
+    -fx-border-color: #7aaed6;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 3, 0, 0, 2);
+}
+
+.wii-radio-button:selected {
+    -fx-background-color: linear-gradient(to bottom, #bfe3ff, #7dbfff);
+    -fx-border-color: #4a90e2;
+    -fx-text-fill: #ffffff;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 3);
+}
+.wii-radio-button:disabled {
+    -fx-background-color: linear-gradient(to bottom, #f4f4f4, #dcdcdc);
+    -fx-text-fill: #aaaaaa;
+    -fx-border-color: #cccccc;
+    -fx-effect: none;
+    -fx-opacity: 1; /* Keeps it from becoming too transparent */
+    -fx-cursor: default;
+}
+
+.xbox-radio-button {
+    -fx-padding: 8 20;
+    -fx-background-color: linear-gradient(to bottom, #e6e6e6, #cccccc);
+    -fx-border-color: #888888;
+    -fx-border-width: 1.8;
+    -fx-border-radius: 30;
+    -fx-background-radius: 30;
+    -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
+    -fx-font-size: 15px;
+    -fx-text-fill: #333333;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+    -fx-cursor: hand;
+    -fx-alignment: center;
+}
+
+.xbox-radio-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #d9ffd9, #b3ffb3);
+    -fx-border-color: #66cc66;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 2);
+}
+
+.xbox-radio-button:selected {
+    -fx-background-color: linear-gradient(to bottom, #76c043, #5ca82d);
+    -fx-border-color: #4a8f1f;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 5, 0, 0, 3);
 }

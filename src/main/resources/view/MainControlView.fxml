@@ -46,6 +46,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.Pane?>
@@ -101,7 +102,17 @@
          <children>
             <SplitPane dividerPositions="0.6873040752351097" prefHeight="377.0" prefWidth="640.0">
                <items>
-                  <Pane fx:id="viewContainer" prefHeight="371.0" prefWidth="418.0" styleClass="stack-pane-background" />
+                  <StackPane prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Pane fx:id="viewContainer" prefHeight="371.0" prefWidth="418.0" styleClass="stack-pane-background" />
+                         <ImageView fx:id="arrowImage" fitHeight="40" fitWidth="40" mouseTransparent="true" pickOnBounds="false" StackPane.alignment="TOP_LEFT">
+                           <StackPane.margin>
+                              <Insets left="20.0" top="20.0" />
+                           </StackPane.margin>
+                        </ImageView>
+
+                     </children>
+                  </StackPane>
                   <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
                      <content>
                         <VBox fx:id="scrollPaneVbox" prefHeight="368.0" prefWidth="167.0" spacing="10.0" style="-fx-background-color: #F0F0F5;">
@@ -133,13 +144,14 @@
                                     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <RadioButton fx:id="showResaToggle" mnemonicParsing="false" onAction="#handleResaOverlayShow" styleClass="rounded-radio-button" text="RESA" GridPane.rowIndex="2" />
-                                    <RadioButton fx:id="showToraToggle" mnemonicParsing="false" onAction="#handleToraOverlayShow" styleClass="rounded-radio-button" text="TORA" />
-                                    <RadioButton fx:id="showTodaToggle" mnemonicParsing="false" onAction="#handleTodaOverlayShow" styleClass="rounded-radio-button" text="TODA" GridPane.columnIndex="1" />
-                                    <RadioButton fx:id="showLdaToggle" mnemonicParsing="false" onAction="#handleLdaOverlayShow" styleClass="rounded-radio-button" text="LDA" GridPane.rowIndex="1" />
-                                    <RadioButton fx:id="showAsdaToggle" mnemonicParsing="false" onAction="#handleAsdaOverlayShow" styleClass="rounded-radio-button" text="ASDA" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                                    <RadioButton fx:id="showClearwayToggle" mnemonicParsing="false" onAction="#handleClearwayOverlayShow" prefHeight="18.0" prefWidth="132.0" styleClass="rounded-radio-button" text="Clearway" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                                    <RadioButton fx:id="showCAGToggle" mnemonicParsing="false" onAction="#handleCAGOverlayShow" prefHeight="18.0" prefWidth="140.0" styleClass="rounded-radio-button" text="Cleared Area" GridPane.rowIndex="3" />
+                                    <RadioButton fx:id="showResaToggle" mnemonicParsing="false" onAction="#handleResaOverlayShow" styleClass="wii-radio-button" text="RESA" GridPane.rowIndex="2" />
+                                    <RadioButton fx:id="showToraToggle" mnemonicParsing="false" onAction="#handleToraOverlayShow" styleClass="wii-radio-button" text="TORA" />
+                                    <RadioButton fx:id="showTodaToggle" mnemonicParsing="false" onAction="#handleTodaOverlayShow" styleClass="wii-radio-button" text="TODA" GridPane.columnIndex="1" />
+                                    <RadioButton fx:id="showLdaToggle" mnemonicParsing="false" onAction="#handleLdaOverlayShow" styleClass="wii-radio-button" text="LDA" GridPane.rowIndex="1" />
+                                    <RadioButton fx:id="showAsdaToggle" mnemonicParsing="false" onAction="#handleAsdaOverlayShow" styleClass="wii-radio-button" text="ASDA" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <RadioButton fx:id="showClearwayToggle" mnemonicParsing="false" onAction="#handleClearwayOverlayShow" prefHeight="18.0" prefWidth="132.0" styleClass="wii-radio-button" text="Clearway" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <RadioButton fx:id="showCAGToggle" mnemonicParsing="false" onAction="#handleCAGOverlayShow" prefHeight="18.0" prefWidth="140.0" styleClass="wii-radio-button" text="Cleared Area" GridPane.rowIndex="3" />
+                                    <RadioButton fx:id="showALSToggle" mnemonicParsing="false" onAction="#handleALSOverlayShow" styleClass="wii-radio-button" text="ALS" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                  </children>
                               </GridPane>
                               <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="165.0" text="Add Obstacle" />
