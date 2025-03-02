@@ -39,4 +39,14 @@ public class CAAParametersLoader {
         }
         return runways;
     }
+
+    public static void applyManualParameters (Runway runway, int length, int clearwayLength, int stopway, int displacedThreshold){
+        runway.setLength(length);
+        runway.getClearedAndGradedWidth();
+        runway.getClearedAndGradedLengthBeyondRunwayEnds();
+        runway.setBlastProtection(displacedThreshold);
+
+        runway.redeclareALL();
+
+    }
 }

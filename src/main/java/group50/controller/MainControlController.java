@@ -2,17 +2,16 @@ package group50.controller;
 
 import group50.graphics.RunwayRenderer;
 import group50.model.Runway;
+import group50.utils.CAAParametersLoader;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.FXML;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 public class MainControlController  implements Initializable  {
     @FXML private Pane runwayView;
-    @FXML private ComboBox<String> runwaySelector;
+    @FXML private ComboBox<Runway> runwaySelector;
     @FXML private ComboBox<String> viewTypeSelector;
     @FXML private RadioButton showCAGToggle;
     @FXML private RadioButton showClearwayToggle;
@@ -45,6 +44,16 @@ public class MainControlController  implements Initializable  {
     private RadioButton showLdaToggle;
     @FXML
     private RadioButton showAsdaToggle;
+
+    @FXML
+    private TextField toraInput;
+    @FXML
+    private TextField todaInput;
+    @FXML
+    private TextField asdaInput;
+    @FXML
+    private TextField ldaInput;
+
 
     // For panning
     private double mouseAnchorX;
@@ -186,6 +195,11 @@ public class MainControlController  implements Initializable  {
         loadTopDownView();
         overlayRunThrough();
 
+        runwaySelector.setItems(FXCollections.observableArrayList(runwayList));
+        if (!runwayList.isEmpty()) {
+            runwaySelector.getSelectionModel().select(0);
+        }
+
 
 
         viewContainer.setOnMousePressed(event -> {
@@ -257,6 +271,7 @@ public class MainControlController  implements Initializable  {
         });
 
 
+
     }
 
 
@@ -305,5 +320,29 @@ public class MainControlController  implements Initializable  {
     }
 
 
+    @FXML
+    private void handleApplyParameters() {
+        try {
+            int tora = Integer.parseInt(toraInput.getText());
+            int toda = Integer.parseInt(todaInput.getText());
+            int asda = Integer.parseInt(asdaInput.getText());
+            int lda = Integer.parseInt(ldaInput.getText());
+
+            Runway selectedRunway = getSelectedRunway();
+            if (selectedRunway != null) {
+                CAAParametersLoader.applyManualParameters(selectedRunway, tora, toda, asda, lda);
+                System.out.println("Parameters applied to " + selectedRunway.getName());
+            } else {
+                System.out.println("No runway selected.");
+            }
+
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input! Please enter valid numbers.");
+        }
+    }
+
+    private Runway getSelectedRunway() {
+        return runwaySelector.getValue();
+    }
 }
 
