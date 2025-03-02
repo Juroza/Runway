@@ -34,8 +34,10 @@
 
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
@@ -96,14 +98,15 @@
     </MenuBar>
       <StackPane prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <children>
-            <SplitPane dividerPositions="0.7311912225705329" prefHeight="377.0" prefWidth="640.0">
+            <SplitPane dividerPositions="0.6873040752351097" prefHeight="377.0" prefWidth="640.0">
                <items>
                   <Pane fx:id="viewContainer" prefHeight="371.0" prefWidth="418.0" styleClass="stack-pane-background" />
                   <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
                      <content>
-                        <VBox fx:id="scrollPaneVbox" prefHeight="368.0" prefWidth="167.0" spacing="10.0" style="-fx-background-color: darkgray;">
+                        <VBox fx:id="scrollPaneVbox" prefHeight="368.0" prefWidth="167.0" spacing="10.0" style="-fx-background-color: #F0F0F5;">
                            <children>
-                              <ComboBox fx:id="viewTypeSelector" onAction="#handleViewTypeSelection" prefWidth="150.0" promptText="View Type">
+                              <Label styleClass="section-title" text="View Selection" />
+                              <ComboBox fx:id="viewTypeSelector" onAction="#handleViewTypeSelection" prefWidth="150.0" promptText="View Type" styleClass="modern-combo-box">
                                   <items>
                                       <!-- Create an observable list factory for the combo box items -->
                                       <FXCollections fx:factory="observableArrayList">
@@ -114,8 +117,10 @@
                                   </items>
 
                               </ComboBox>
-                              <ComboBox fx:id="runwaySelector" onAction="#handleRunwaySelectorInput" prefWidth="150.0" promptText="Select Runway" />
-                              <GridPane>
+                              <Label styleClass="section-title" text="Runway Selection" />
+                              <ComboBox fx:id="runwaySelector" onAction="#handleRunwaySelectorInput" prefWidth="150.0" promptText="Select Runway" styleClass="modern-combo-box" />
+                              <Label styleClass="section-title" text="Overlay Controls" />
+                              <GridPane hgap="10" prefHeight="106.0" prefWidth="168.0" style="-fx-padding: 10;" vgap="50">
                                 <columnConstraints>
                                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                   <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -124,19 +129,25 @@
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <RadioButton fx:id="showResaToggle" mnemonicParsing="false" onAction="#handleResaOverlayShow" text="RESA" GridPane.rowIndex="2" />
-                                    <RadioButton fx:id="showToraToggle" mnemonicParsing="false" onAction="#handleToraOverlayShow" text="TORA" />
-                                    <RadioButton fx:id="showTodaToggle" mnemonicParsing="false" onAction="#handleTodaOverlayShow" text="TODA" GridPane.columnIndex="1" />
-                                    <RadioButton fx:id="showLdaToggle" mnemonicParsing="false" onAction="#handleLdaOverlayShow" text="LDA" GridPane.rowIndex="1" />
-                                    <RadioButton fx:id="showAsdaToggle" mnemonicParsing="false" onAction="#handleAsdaOverlayShow" text="ASDA" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <RadioButton fx:id="showResaToggle" mnemonicParsing="false" onAction="#handleResaOverlayShow" styleClass="rounded-radio-button" text="RESA" GridPane.rowIndex="2" />
+                                    <RadioButton fx:id="showToraToggle" mnemonicParsing="false" onAction="#handleToraOverlayShow" styleClass="rounded-radio-button" text="TORA" />
+                                    <RadioButton fx:id="showTodaToggle" mnemonicParsing="false" onAction="#handleTodaOverlayShow" styleClass="rounded-radio-button" text="TODA" GridPane.columnIndex="1" />
+                                    <RadioButton fx:id="showLdaToggle" mnemonicParsing="false" onAction="#handleLdaOverlayShow" styleClass="rounded-radio-button" text="LDA" GridPane.rowIndex="1" />
+                                    <RadioButton fx:id="showAsdaToggle" mnemonicParsing="false" onAction="#handleAsdaOverlayShow" styleClass="rounded-radio-button" text="ASDA" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                    <RadioButton fx:id="showClearwayToggle" mnemonicParsing="false" onAction="#handleClearwayOverlayShow" prefHeight="18.0" prefWidth="132.0" styleClass="rounded-radio-button" text="Clearway" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                    <RadioButton fx:id="showCAGToggle" mnemonicParsing="false" onAction="#handleCAGOverlayShow" prefHeight="18.0" prefWidth="140.0" styleClass="rounded-radio-button" text="Cleared Area" GridPane.rowIndex="3" />
                                  </children>
                               </GridPane>
                               <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="165.0" text="Add Obstacle" />
                            </children>
                         </VBox>
                      </content>
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding>
                   </ScrollPane>
                </items>
             </SplitPane>

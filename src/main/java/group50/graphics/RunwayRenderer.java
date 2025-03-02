@@ -23,6 +23,8 @@ public class RunwayRenderer {
     static Paint RESA= Color.RED;
     static Paint LDA= Color.MOCCASIN;
     static Paint ASDA= Color.ORANGE;
+    static Paint CLEARWAY= Color.FUCHSIA;
+    static  Paint CAGAREA= Color.ROYALBLUE;
 
 
 
@@ -70,7 +72,10 @@ public class RunwayRenderer {
         ldaRect.setOpacity(layerOpacity);
         Rectangle asdaRect= new Rectangle(runwayInput.getASDA()*10,600, ASDA);
         asdaRect.setOpacity(layerOpacity);
-
+        Rectangle clearwayRect= new Rectangle(runwayInput.getClearwayLength()*10,runwayInput.getClearwayWidth()*10,CLEARWAY);
+        clearwayRect.setOpacity(layerOpacity);
+        Rectangle CAGRect= new Rectangle(runwayInput.getClearedAndGradedLengthBeyondRunwayEnds()*10*2+runwayRect.getWidth(),runwayInput.getClearedAndGradedWidth()*10,CAGAREA);
+        CAGRect.setOpacity(layerOpacity);
         runwayRect.setLayoutX(grassArea.getCenterX() - runwayRect.getWidth() / 2);
         runwayRect.setLayoutY(grassArea.getCenterY() - runwayRect.getHeight() / 2);
 
@@ -84,7 +89,11 @@ public class RunwayRenderer {
         ldaRect.setLayoutY(runwayRect.getLayoutY());
         asdaRect.setLayoutX(runwayRect.getLayoutX());
         asdaRect.setLayoutY(runwayRect.getLayoutY());
-        objects.addAll(Arrays.asList(grassArea, stopwayRect, runwayRect, ldaRect, toraRect, todaRect, asdaRect));
+        clearwayRect.setLayoutX(toraRect.getLayoutX()+toraRect.getWidth());
+        clearwayRect.setLayoutY(toraRect.getLayoutY()-((clearwayRect.getHeight()-toraRect.getHeight())/2));
+        CAGRect.setLayoutX(stopwayRect.getLayoutX()-(CAGRect.getWidth()-stopwayRect.getWidth())/2);
+        CAGRect.setLayoutY(stopwayRect.getLayoutY()-(CAGRect.getHeight()-stopwayRect.getHeight())/2);
+        objects.addAll(Arrays.asList(grassArea,CAGRect,stopwayRect, runwayRect, ldaRect, toraRect, todaRect, asdaRect,clearwayRect));
         runwayRect.setId("runway");
         stopwayRect.setId("stopway");
         grassArea.setId("grass");
@@ -93,6 +102,8 @@ public class RunwayRenderer {
         resaRect.setId("resa");
         ldaRect.setId("lda");
         asdaRect.setId("asda");
+        clearwayRect.setId("clearway");
+        CAGRect.setId("CAG");
 
         return objects;
 
