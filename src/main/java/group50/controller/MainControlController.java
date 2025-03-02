@@ -7,6 +7,8 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -20,7 +22,10 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.Group;
 import javafx.fxml.Initializable;
+import javafx.stage.Stage;
+import org.apache.logging.log4j.core.util.JsonUtils;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,15 +60,15 @@ public class MainControlController  implements Initializable  {
     private RadioButton showALSToggle;
 
 
-    @FXML
-    private TextField toraInput;
-    @FXML
-    private TextField todaInput;
-    @FXML
-    private TextField asdaInput;
-    @FXML
-    private TextField ldaInput;
 
+    @FXML
+    private TextField lengthInput;
+    @FXML
+    private TextField clearwayInput;
+    @FXML
+    private TextField stopwayInput;
+    @FXML
+    private TextField displacedThresholdInput;
 
     // For panning
     private double mouseAnchorX;
@@ -364,29 +369,72 @@ public class MainControlController  implements Initializable  {
     }
 
 
-    @FXML
-    private void handleApplyParameters() {
-        try {
-            int tora = Integer.parseInt(toraInput.getText());
-            int toda = Integer.parseInt(todaInput.getText());
-            int asda = Integer.parseInt(asdaInput.getText());
-            int lda = Integer.parseInt(ldaInput.getText());
-
-            Runway selectedRunway = getSelectedRunway();
-            if (selectedRunway != null) {
-                CAAParametersLoader.applyManualParameters(selectedRunway, tora, toda, asda, lda);
-                System.out.println("Parameters applied to " + selectedRunway.getName());
-            } else {
-                System.out.println("No runway selected.");
-            }
-
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid input! Please enter valid numbers.");
-        }
-    }
-
     private Runway getSelectedRunway() {
         return runwaySelector.getValue();
     }
+
+
+    @FXML
+    private void handleApplyParameters() {
+        System.out.println("Apply button clicked");
+        try{
+            if (lengthInput.getText().isEmpty() ||
+                clearwayInput.getText().isEmpty() ||
+                stopwayInput.getText().isEmpty() ||
+                displacedThresholdInput.getText().isEmpty()) {
+
+                Alert alert = new Alert (Alert.AlertType.WARNING);
+                alert.setTitle("Invalid Parameters");
+                alert.setHeaderText(null);
+                alert.setContentText("Please enter all runway parameters");
+                alert.showAndWait();
+                return;
+            }
+            Runway selectedRunway = getSelectedRunway();
+
+            if (selectedRunway != null) {
+                //get old values
+                int oldTORA = selectedRunway.getTORA();
+                int oldTODA = selectedRunway.getTODA();
+                int oldASDA = selectedRunway.getASDA();
+                int oldLDA = selectedRunway.getLDA();
+
+                //get new parameters
+                int length = Integer.parseInt(lengthInput.getText());
+                int clearwayLength = Integer.parseInt(clearwayInput.getText());
+                int stopway = Integer.parseInt(stopwayInput.getText());
+                int displacedThreshold = Integer.parseInt(displacedThresholdInput.getText());
+
+                //get new parameter and recalculate
+                CAAParametersLoader.applyManualParameters(selectedRunway, length, clearwayLength, stopway, displacedThreshold);
+
+                //get new values
+                int newTORA = selectedRunway.getTORA();
+                int newTODA = selectedRunway.getTODA();
+                int newASDA = selectedRunway.getASDA();
+                int newLDA = selectedRunway.getLDA();
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/ComparisonView.fxml"));
+                Parent root = loader.load();
+
+                ComparisonController controller = loader.getController();
+                controller.setData(oldTORA, newTORA, oldTODA, newTODA, oldASDA, newASDA, oldLDA, newLDA);
+
+                Stage stage = new Stage();
+                stage.setTitle("Runway Parameters Comparison");
+                stage.setScene(new Scene(root));
+                stage.show();
+            } else {
+                System.out.println("No runway selected. ");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Please enter valid number!");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Failed to load comparison view.");
+        }
+    }
+
+
 }
 

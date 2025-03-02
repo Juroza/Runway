@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="group50.controller.ComparisonController">
+
+    <TableView fx:id="comparisonTable" prefWidth="500" prefHeight="180" style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-radius: 5;">
+        <columns>
+            <TableColumn fx:id="parameterColumn" text="Parameter" prefWidth="150.0" />
+            <TableColumn fx:id="oldValueColumn" text="Old Value" prefWidth="150.0" />
+            <TableColumn fx:id="newValueColumn" text="New Value" prefWidth="150.0" />
+            <TableColumn fx:id="differenceColumn" text="Difference" prefWidth="150.0" />
+        </columns>
+    </TableView>
+</AnchorPane>
