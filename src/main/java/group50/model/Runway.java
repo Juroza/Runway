@@ -4,14 +4,15 @@ import static java.lang.Math.*;
 
 public class Runway {
 
-  public Runway(String name, int length, int stripLength, int stopway, int clearway, int displacedThreshold, int RESA) {
+  public Runway(String name, int length, int stripLength, int stopway, int clearwayLength,int clearwayWidth, int displacedThreshold, int RESA) {
     this.name = name;
     this.length = length;
     this.stopway = stopway;
-    this.clearway = clearway; //clearway should be greater than stopway
+    this.clearwayLength = clearwayLength; //clearway should be greater than stopway
+    this.clearwayWidth= clearwayWidth;
     this.TORA = length;
     this.ASDA = length + stopway;
-    this.TODA = length + clearway;
+    this.TODA = length + clearwayLength;
 
     this.displacedThreshold = displacedThreshold;
     this.LDA = length - displacedThreshold;
@@ -51,7 +52,7 @@ public class Runway {
     if (obstacle.getDistance() < 0)
       return round(length - abs(obstacle.getDistance()) - 60 - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
     else
-      return length + clearway - obstacle.getDistance() - blastProtection;
+      return length + clearwayLength - obstacle.getDistance() - blastProtection;
   }
 
   private int calculateTODA() {
@@ -75,6 +76,7 @@ public class Runway {
 
   private int stripLength;
 
+
   private int TORA; //take-off run available
 
   private int TODA; //take-off distance available
@@ -85,8 +87,40 @@ public class Runway {
 
   private int displacedThreshold; //can be used for take-off, but not landing
 
-  private int clearway;  //beyond TORA, can be used for plane to climb to a certain height
+  private int clearwayLength;  //beyond TORA, can be used for plane to climb to a certain height
 
+  public int getClearedAndGradedWidth() {
+    return clearedAndGradedWidth;
+  }
+
+  public void setClearedAndGradedWidth(int clearedAndGradedWidth) {
+    this.clearedAndGradedWidth = clearedAndGradedWidth;
+  }
+
+  public int getClearedAndGradedLengthBeyondRunwayEnds() {
+    return clearedAndGradedLengthBeyondRunwayEnds;
+  }
+
+  public void setClearedAndGradedLengthBeyondRunwayEnds(int clearedAndGradedLengthBeyondRunwayEnds) {
+    this.clearedAndGradedLengthBeyondRunwayEnds = clearedAndGradedLengthBeyondRunwayEnds;
+  }
+
+  private int clearedAndGradedWidth;  // Total width of the cleared and graded area (meters)
+  private int clearedAndGradedLengthBeyondRunwayEnds;  // Length it extends beyond each end of the runway (meters)
+
+  public Obstacle getObstacle() {
+    return obstacle;
+  }
+
+  public int getClearwayLength() {
+    return clearwayLength;
+  }
+
+  public int getClearwayWidth() {
+    return clearwayWidth;
+  }
+
+  private int clearwayWidth; //beyond TORA, must be at least as wide as the runway, though it may be wider depending on regulations and airport design.
   private int stopway;  //beyond TORA, can be used for an abandoned take-off
 
   private int RESA; //runway end safety area
@@ -131,9 +165,7 @@ public class Runway {
     return displacedThreshold;
   }
 
-  public int getClarway() {
-    return clearway;
-  }
+
 
   public int getStopway() {
     return stopway;

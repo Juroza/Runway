@@ -29,6 +29,8 @@ public class MainControlController  implements Initializable  {
     @FXML private Pane runwayView;
     @FXML private ComboBox<String> runwaySelector;
     @FXML private ComboBox<String> viewTypeSelector;
+    @FXML private RadioButton showCAGToggle;
+    @FXML private RadioButton showClearwayToggle;
     List<Runway> runwayList;
 
     @FXML
@@ -125,9 +127,9 @@ public class MainControlController  implements Initializable  {
         System.out.println("aoifnoaefinwopfinaow 11");
     }
     @FXML
-    public void handleViewTypeSelection(){
-        String type= viewTypeSelector.getSelectionModel().getSelectedItem();
-        if(type.equals("Top Down")){
+    public void handleViewTypeSelection() {
+        String type = viewTypeSelector.getSelectionModel().getSelectedItem();
+        if (type.equals("Top Down")) {
             resetCameraPosition();
             loadTopDownView();
             reestControlPanel();
@@ -137,6 +139,16 @@ public class MainControlController  implements Initializable  {
             reestControlPanel();
         }
     }
+    @FXML
+    public void handleClearwayOverlayShow(){
+        handleOverlayToggle("clearway",showClearwayToggle);
+    }
+    @FXML
+    public void handleCAGOverlayShow(){
+        handleOverlayToggle("CAG",showCAGToggle);
+    }
+
+
     private void reestControlPanel(){
         showToraToggle.setSelected(false);
         showResaToggle.setSelected(false);
@@ -152,6 +164,8 @@ public class MainControlController  implements Initializable  {
         handleResaOverlayShow();
         handleTodaOverlayShow();
         handleToraOverlayShow();
+        handleCAGOverlayShow();
+        handleClearwayOverlayShow();
     }
 
 
@@ -161,7 +175,9 @@ public class MainControlController  implements Initializable  {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         runwayList= new ArrayList<Runway>();
-        Runway run1= new Runway("runner",3000,3000,60,50,0,60);
+        Runway run1= new Runway("runner",3000,3000,60,500,600,0,60);
+        run1.setClearedAndGradedWidth(3500);
+        run1.setClearedAndGradedLengthBeyondRunwayEnds(600);
         runwayList.add(run1);
         viewTypeSelector.getSelectionModel().select(0);
 
