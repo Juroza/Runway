@@ -14,16 +14,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.FXML;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.Group;
 import javafx.fxml.Initializable;
 import javafx.stage.Stage;
-import org.apache.logging.log4j.core.util.JsonUtils;
 
 import java.io.IOException;
 import java.net.URL;
@@ -161,11 +156,11 @@ public class MainControlController  implements Initializable  {
         if (type.equals("Top Down")) {
             resetCameraPosition();
             loadTopDownView();
-            reestControlPanel();
+            resetControlPanel();
         } else if (type.equals("Side on")) {
             resetCameraPosition();
             loadSideOnView();
-            reestControlPanel();
+            resetControlPanel();
         }
     }
     @FXML
@@ -178,7 +173,7 @@ public class MainControlController  implements Initializable  {
     }
 
 
-    private void reestControlPanel(){
+    private void resetControlPanel(){
         showToraToggle.setSelected(false);
         showResaToggle.setSelected(false);
         showTodaToggle.setSelected(false);
