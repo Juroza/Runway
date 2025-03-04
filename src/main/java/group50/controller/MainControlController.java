@@ -161,8 +161,8 @@ public class MainControlController  implements Initializable  {
     public void handleViewTypeSelection() {
         String type = viewTypeSelector.getSelectionModel().getSelectedItem();
         System.out.println("AHWDUIHAODHOWI");
-        resetCameraAndZoom(); // ✅ Reset zoom and position
-        resetCameraPosition(); // ✅ Reset to stored position (optional, after loading)
+        resetCameraAndZoom();
+        resetCameraPosition();
         if (type.equals("Top Down")) {
             resetCameraPosition();
             loadTopDownView();
@@ -175,12 +175,14 @@ public class MainControlController  implements Initializable  {
     }
     public void updateView() {
         String type = viewTypeSelector.getSelectionModel().getSelectedItem();
-        resetCameraAndZoom(); // ✅ Reset zoom and position
-        resetCameraPosition(); // ✅ Reset to stored position (optional, after loading)
+        resetCameraAndZoom();
+        resetCameraPosition();
         if (type.equals("Top Down")) {
             loadTopDownView();
+            reestControlPanel();
         } else if (type.equals("Side on")) {
             loadSideOnView();
+            reestControlPanel();
         }
     }
     @FXML
