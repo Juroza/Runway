@@ -424,7 +424,7 @@ public class MainControlController  implements Initializable  {
                 int displacedThreshold = Integer.parseInt(displacedThresholdInput.getText());
 
                 //get new parameter and recalculate
-                CAAParametersLoader.applyManualParameters(selectedRunway, length, clearwayLength, stopway, displacedThreshold);
+                selectedRunway.applyManualParameters(selectedRunway, length, clearwayLength, stopway, displacedThreshold);
 
                 //get new values
                 int newTORA = selectedRunway.getTORA();
