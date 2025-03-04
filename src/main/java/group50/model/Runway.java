@@ -27,6 +27,7 @@ public class Runway {
   }
   public Runway(){};
 
+  private int STRIPENDOFFSET = 60;
 
   private Obstacle obstacle = new Obstacle(0, 0);
 
@@ -42,31 +43,27 @@ public class Runway {
   }
 
   private int calculateTORA() {
-    if (obstacle.getDistance() < 0)
-      return round(length - abs(obstacle.getDistance()) - 60 - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
-    else
-      return length - obstacle.getDistance() - blastProtection;
+    if (!hasObstacle()) return length;
+    if (obstacle.getDistance() < 0) return round(length - abs(obstacle.getDistance()) - STRIPENDOFFSET - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
+    return length - obstacle.getDistance() - blastProtection;
   }
 
   private int calculateASDA() {
-    if (obstacle.getDistance() < 0)
-      return round(length - abs(obstacle.getDistance()) - 60 - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
-    else
-      return length + clearwayLength - obstacle.getDistance() - blastProtection;
+    if (!hasObstacle()) return length + stopway;
+    if (obstacle.getDistance() < 0) return round(length - abs(obstacle.getDistance()) - STRIPENDOFFSET - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
+    return length + stopway - obstacle.getDistance() - blastProtection;
   }
 
   private int calculateTODA() {
-    if (obstacle.getDistance() < 0)
-      return round(length - abs(obstacle.getDistance()) - 60 - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
-    else
-      return length + stopway - obstacle.getDistance() - blastProtection;
+    if (!hasObstacle()) return length + clearwayLength;
+    if (obstacle.getDistance() < 0) return round(length - abs(obstacle.getDistance()) - STRIPENDOFFSET - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
+    return length + clearwayLength - obstacle.getDistance() - blastProtection;
   }
 
   private int calculateLDA() {
-    if (obstacle.getDistance() < 0)
-      return length - max(abs(obstacle.getDistance()), displacedThreshold);
-    else
-      return round(length - obstacle.getDistance() - 60 - max((RESA + obstacle.getHeight())*TOCS.getAngle(), displacedThreshold) - 0.5f) - displacedThreshold;
+    if (!hasObstacle()) return length - displacedThreshold;
+    if (obstacle.getDistance() < 0) return length - abs(obstacle.getDistance()) - displacedThreshold;
+    return round(length - obstacle.getDistance() - STRIPENDOFFSET - max((RESA + obstacle.getHeight())*TOCS.getAngle(), displacedThreshold) - 0.5f);
   }
   
 
