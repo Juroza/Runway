@@ -205,4 +205,17 @@ public class Runway {
     return name;
   }
 
+  public void applyManualParameters (Runway runway, int length, int clearwayLength, int stopway, int displacedThreshold){
+    this.setLength(length);
+    this.clearwayLength = clearwayLength;
+    this.stopway = stopway;
+    this.displacedThreshold = displacedThreshold;
+
+    this.getClearedAndGradedWidth();
+    this.getClearedAndGradedLengthBeyondRunwayEnds();
+
+    runway.redeclareALL();
+
+  }
+
 }
