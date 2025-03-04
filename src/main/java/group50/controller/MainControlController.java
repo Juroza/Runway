@@ -436,7 +436,8 @@ public class MainControlController  implements Initializable  {
                 Parent root = loader.load();
 
                 ComparisonController controller = loader.getController();
-                controller.setData(oldTORA, newTORA, oldTODA, newTODA, oldASDA, newASDA, oldLDA, newLDA);
+                controller.setData(oldTORA, newTORA, oldTODA, newTODA, oldASDA, newASDA, oldLDA, newLDA,
+                                   length, clearwayLength, stopway, displacedThreshold );
 
                 Stage stage = new Stage();
                 stage.setTitle("Runway Parameters Comparison");
