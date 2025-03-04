@@ -3,6 +3,8 @@ package group50.controller;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,6 +20,8 @@ public class ComparisonController {
     private TableColumn<ComparisonData, Integer> newValueColumn;
     @FXML
     private TableColumn<ComparisonData, Integer> differenceColumn;
+    @FXML
+    private TextArea calculationDetailsArea;
 
     @FXML
     public void initialize() {
@@ -27,7 +31,8 @@ public class ComparisonController {
         differenceColumn.setCellValueFactory(new PropertyValueFactory<>("difference"));
     }
 
-    public void setData(int oldTORA, int newTORA, int oldTODA, int newTODA, int oldASDA, int newASDA, int oldLDA, int newLDA) {
+    public void setData(int oldTORA, int newTORA, int oldTODA, int newTODA, int oldASDA, int newASDA, int oldLDA, int newLDA,
+                        int length, int clearwayLength, int stopwayLength, int displacedThreshold) {
         ObservableList<ComparisonData> data = FXCollections.observableArrayList(
                 new ComparisonData("TORA", oldTORA, newTORA),
                 new ComparisonData("TODA", oldTODA, newTODA),
@@ -35,6 +40,15 @@ public class ComparisonController {
                 new ComparisonData("LDA", oldLDA, newLDA)
         );
         comparisonTable.setItems(data);
+
+        String calculationDetails = String.format(
+                "TORA = Length = %d\n" +
+                        "TODA = TORA + Clearway Length = %d + %d = %d\n" +
+                        "ASDA = TORA + Stopway Length = %d + %d = %d\n" +
+                        "LDA = TORA - Displaced Threshold = %d - %d = %d",
+                length, length, clearwayLength, newTODA, length, stopwayLength, newASDA, length, displacedThreshold, newLDA
+        );
+        calculationDetailsArea.setText(calculationDetails);
     }
 
     public static class ComparisonData {
