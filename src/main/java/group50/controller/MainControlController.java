@@ -74,6 +74,7 @@ public class MainControlController  implements Initializable  {
     private double initialTranslateYStore;
     private double initialScaleX;
     private double initialScaleY;
+    private boolean switchingViews=false;
 
     List<Node> objs= new ArrayList<>();
 
@@ -149,10 +150,14 @@ public class MainControlController  implements Initializable  {
     @FXML
     public void handleRunwaySelectorInput(){
         System.out.println("aoifnoaefinwopfinaow 11");
+        handleViewTypeSelection();
     }
     @FXML
     public void handleViewTypeSelection() {
         String type = viewTypeSelector.getSelectionModel().getSelectedItem();
+        System.out.println("AHWDUIHAODHOWI");
+        resetCameraAndZoom(); // ✅ Reset zoom and position
+        resetCameraPosition(); // ✅ Reset to stored position (optional, after loading)
         if (type.equals("Top Down")) {
             resetCameraPosition();
             loadTopDownView();
@@ -161,6 +166,16 @@ public class MainControlController  implements Initializable  {
             resetCameraPosition();
             loadSideOnView();
             resetControlPanel();
+        }
+    }
+    public void updateView() {
+        String type = viewTypeSelector.getSelectionModel().getSelectedItem();
+        resetCameraAndZoom(); // ✅ Reset zoom and position
+        resetCameraPosition(); // ✅ Reset to stored position (optional, after loading)
+        if (type.equals("Top Down")) {
+            loadTopDownView();
+        } else if (type.equals("Side on")) {
+            loadSideOnView();
         }
     }
     @FXML
@@ -328,6 +343,12 @@ public class MainControlController  implements Initializable  {
         runwayGroup.setTranslateY(-grassArea.getCenterY() + windowHeight/ 2);
         storeInitialCameraPosition();
     }
+    public void resetCameraAndZoom() {
+        runwayGroup.setTranslateX(0);
+        runwayGroup.setTranslateY(0);
+        runwayGroup.setScaleX(1);
+        runwayGroup.setScaleY(1);
+    }
     private void loadSideOnView() {
         showToraToggle.setDisable(true);
         showCAGToggle.setDisable(true);
@@ -419,6 +440,7 @@ public class MainControlController  implements Initializable  {
                 stage.setTitle("Runway Parameters Comparison");
                 stage.setScene(new Scene(root));
                 stage.show();
+                updateView();
             } else {
                 System.out.println("No runway selected. ");
             }
