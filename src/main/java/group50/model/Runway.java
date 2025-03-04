@@ -63,7 +63,7 @@ public class Runway {
   private int calculateLDA() {
     if (!hasObstacle()) return length - displacedThreshold;
     if (obstacle.getDistance() < 0) return length - abs(obstacle.getDistance()) - displacedThreshold;
-    return round(length - obstacle.getDistance() - STRIPENDOFFSET - max((RESA + obstacle.getHeight())*TOCS.getAngle(), displacedThreshold) - 0.5f);
+    return round(length - obstacle.getDistance() - STRIPENDOFFSET - max((RESA + obstacle.getHeight())*ALS.getAngle(), displacedThreshold) - 0.5f);
   }
   
 
