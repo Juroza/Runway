@@ -205,6 +205,10 @@ public class Runway {
     return name;
   }
 
+  public void setObstacle(Obstacle obstacle) {
+    this.obstacle = obstacle;
+  }
+
   public void applyManualParameters (Runway runway, int length, int clearwayLength, int stopway, int displacedThreshold){
     this.setLength(length);
     this.clearwayLength = clearwayLength;
