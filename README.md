@@ -8,8 +8,8 @@ A JavaFX application for visualizing runway configurations with support for dyna
 - Top-down and side-on runway views.
 - Adjustable runway parameters.
 - Visual overlays for RESA, TODA, TORA, and more.
-- Supports zooming, panning, and reset controls.
-- User-friendly interface styled like classic console UIs.
+- Supports zooming and panning
+- User-friendly interface
 
 ---
 
