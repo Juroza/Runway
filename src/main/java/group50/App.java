@@ -23,7 +23,6 @@ public class App  extends Application {
         stage.setScene(scene);
         stage.setTitle("Runway");
         scene.getStylesheets().add("styles.css");
-        logger.info("beerus");
         stage.show();
     }
 

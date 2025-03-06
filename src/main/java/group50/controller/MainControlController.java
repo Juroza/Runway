@@ -133,6 +133,14 @@ public class MainControlController  implements Initializable  {
             }
         }
     }
+    private void allowOnlyDigits(TextField textField) {
+        textField.textProperty().addListener((obs, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                textField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
+    }
+
     public void storeInitialCameraPosition() {
         initialTranslateXStore = runwayGroup.getTranslateX();
         initialTranslateYStore = runwayGroup.getTranslateY();
@@ -149,13 +157,11 @@ public class MainControlController  implements Initializable  {
 
     @FXML
     public void handleRunwaySelectorInput(){
-        System.out.println("aoifnoaefinwopfinaow 11");
         handleViewTypeSelection();
     }
     @FXML
     public void handleViewTypeSelection() {
         String type = viewTypeSelector.getSelectionModel().getSelectedItem();
-        System.out.println("AHWDUIHAODHOWI");
         resetCameraAndZoom();
         resetCameraPosition();
         if (type.equals("Top Down")) {
@@ -221,6 +227,10 @@ public class MainControlController  implements Initializable  {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         arrowImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/arrow.png"))));
         arrowImage.setScaleX(2);
+        allowOnlyDigits(lengthInput);
+        allowOnlyDigits(clearwayInput);
+        allowOnlyDigits(stopwayInput);
+        allowOnlyDigits(displacedThresholdInput);
         runwayList= new ArrayList<Runway>();
         Runway run1= new Runway("runner",3000,3000,60,500,600,0,60);
         run1.setClearedAndGradedWidth(3500);
@@ -395,6 +405,10 @@ public class MainControlController  implements Initializable  {
     @FXML
     private void handleApplyParameters() {
         System.out.println("Apply button clicked");
+        lengthInput.setText(lengthInput.getText().trim().replaceAll("\\s+", ""));
+        clearwayInput.setText(clearwayInput.getText().trim().replaceAll("\\s+", ""));
+        stopwayInput.setText(stopwayInput.getText().trim().replaceAll("\\s+", ""));
+        displacedThresholdInput.setText(displacedThresholdInput.getText().trim().replaceAll("\\s+", ""));
         try{
             if (lengthInput.getText().isEmpty() ||
                 clearwayInput.getText().isEmpty() ||
@@ -405,6 +419,14 @@ public class MainControlController  implements Initializable  {
                 alert.setTitle("Invalid Parameters");
                 alert.setHeaderText(null);
                 alert.setContentText("Please enter all runway parameters");
+                alert.showAndWait();
+                return;
+            }
+            if( Integer.parseInt(lengthInput.getText())<800){
+                Alert alert = new Alert (Alert.AlertType.WARNING);
+                alert.setTitle("Warning");
+                alert.setHeaderText(null);
+                alert.setContentText("Runway Length too short for operation");
                 alert.showAndWait();
                 return;
             }
@@ -448,10 +470,19 @@ public class MainControlController  implements Initializable  {
                 System.out.println("No runway selected. ");
             }
         } catch (NumberFormatException e) {
-            System.out.println("Please enter valid number!");
+
+            Alert alert = new Alert (Alert.AlertType.WARNING);
+            alert.setTitle("Invalid Value");
+            alert.setHeaderText(null);
+            alert.setContentText("Please enter valid number");
+            alert.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Failed to load comparison view.");
+            Alert alert = new Alert (Alert.AlertType.WARNING);
+            alert.setTitle("Fail");
+            alert.setHeaderText(null);
+            alert.setContentText("Failed to load comparison view ");
+            alert.showAndWait();
         }
     }
 
