@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.collections.FXCollections?>
+
+<VBox alignment="CENTER" spacing="15" style="-fx-background-color: #F5F5F5;" prefWidth="400" prefHeight="500"
+      xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="group50.controller.LoginController">
+
+    <Label text="✈ Log In" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+    <TextField fx:id="usernameField" promptText="Username"
+               style="-fx-font-size: 14px; -fx-padding: 10px; -fx-border-radius: 10px;"/>
+
+    <PasswordField fx:id="passwordField" promptText="Password"
+                   style="-fx-font-size: 14px; -fx-padding: 10px; -fx-border-radius: 10px;"/>
+
+    <ComboBox fx:id="airportComboBox" style="-fx-font-size: 14px; -fx-padding: 10px;">
+        <items>
+            <FXCollections fx:factory="observableArrayList">
+                <String fx:value="LHR"/>
+                <String fx:value="LGW"/>
+                <String fx:value="JFK"/>
+            </FXCollections>
+        </items>
+    </ComboBox>
+
+    <Button text="Login" fx:id="loginButton" onAction="#handleLogin"
+            style="-fx-background-color: #FFD700; -fx-text-fill: black; -fx-font-size: 14px;
+                   -fx-border-radius: 20px; -fx-padding: 10px; -fx-min-width: 120px;"/>
+
+    <Label fx:id="errorLabel" textFill="red" style="-fx-font-size: 12px;"/>
+</VBox>
+

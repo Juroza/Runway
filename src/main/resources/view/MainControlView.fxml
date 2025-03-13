@@ -165,6 +165,10 @@
                                <Label text="Displaced Threshold (m)" />
                                <TextField fx:id="displacedThresholdInput" promptText="Enter Displaced Threshold" />
                                <Button text="Apply Parameters" onAction="#handleApplyParameters" prefWidth="150" />
+                               <Label fx:id="welcomeLabel" text="Welcome" layoutX="50" layoutY="20"/>
+                               <Button text="Back" fx:id="backToLoginButton" onAction="#handleBackToLogin"
+                                       style="-fx-background-color: #D32F2F; -fx-text-fill: white; -fx-font-size: 14px;
+                                        -fx-border-radius: 10px; -fx-padding: 10px; -fx-min-width: 100px;"/>
                            </children>
                         </VBox>
                      </content>
