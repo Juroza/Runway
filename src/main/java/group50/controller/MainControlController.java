@@ -503,10 +503,11 @@ public class MainControlController  implements Initializable  {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
             Parent loginRoot = loader.load();
 
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-
+            LoginController loginController = loader.getController();
+            loginController.setStage((Stage) ((Node) event.getSource()).getScene().getWindow());
 
             Scene loginScene = new Scene(loginRoot);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(loginScene);
             stage.setTitle("Login Page");
             stage.show();

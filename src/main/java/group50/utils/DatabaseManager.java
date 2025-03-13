@@ -105,26 +105,4 @@ public class DatabaseManager {
         }
     }
 
-    public static void main(String[] args) {
-        try {
-            Class.forName("org.sqlite.JDBC");
-            System.out.println("SQLite JDBC Driver loaded successfully.");
-
-            createTableIfNotExists();
-
-            Connection conn = DriverManager.getConnection(DB_URL);
-            System.out.println("Database connected successfully.");
-
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM users");
-            while (rs.next()) {
-                System.out.println("User: " + rs.getString("username") + ", Role: " + rs.getString("role"));
-            }
-
-            conn.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }
