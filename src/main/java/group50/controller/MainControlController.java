@@ -68,8 +68,6 @@ public class MainControlController  implements Initializable  {
 
     //for user role
     @FXML private Label welcomeLabel;
-    @FXML private Button adminButton;
-    @FXML private Button editorButton;
 
     // For panning
     private double mouseAnchorX;
@@ -494,6 +492,13 @@ public class MainControlController  implements Initializable  {
 
     public void setUserRole (String role) {
         welcomeLabel.setText("Welcome, " + role.toUpperCase());
+
+        boolean isViewer = role.equalsIgnoreCase("viewer");
+
+        lengthInput.setDisable(isViewer);
+        clearwayInput.setDisable(isViewer);
+        stopwayInput.setDisable(isViewer);
+        displacedThresholdInput.setDisable(isViewer);
 
     }
 

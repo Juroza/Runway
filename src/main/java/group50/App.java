@@ -24,9 +24,10 @@ public class App  extends Application {
         controller.setStage(stage);
 
         Scene scene = new Scene(root, 800, 600);
+        scene.getStylesheets().add("styles.css");
+
         stage.setScene(scene);
         stage.setTitle("Login");
-        scene.getStylesheets().add("styles.css");
         stage.show();
     }
 

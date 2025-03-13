@@ -54,10 +54,17 @@ public class LoginController {
             controller.setUserRole(role);
 
             Scene scene = new Scene(root, 1980, 1080);
-            stage.setScene(scene);
-            stage.setTitle("Runway");
             scene.getStylesheets().add("styles.css");
-            stage.show();
+
+            if (this.stage == null) {
+                System.out.println("Error: stage is null!");
+                return;
+            }
+
+            this.stage.setScene(scene);
+            this.stage.setTitle("Runway");
+            this.stage.show();
+
         } catch (IOException e) {
             e.printStackTrace();
         }
