@@ -9,6 +9,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import java.io.IOException;
+import group50.controller.LoginController;
 
 public class App  extends Application {
     private static final Logger logger = LogManager.getLogger(App.class);
@@ -16,12 +17,15 @@ public class App  extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         System.setProperty("apple.laf.useScreenMenuBar", "true");
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainControlView.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
         Parent root = loader.load();
 
-        Scene scene = new Scene(root, 1980, 1080);
+        LoginController controller = loader.getController();
+        controller.setStage(stage);
+
+        Scene scene = new Scene(root, 800, 600);
         stage.setScene(scene);
-        stage.setTitle("Runway");
+        stage.setTitle("Login");
         scene.getStylesheets().add("styles.css");
         stage.show();
     }

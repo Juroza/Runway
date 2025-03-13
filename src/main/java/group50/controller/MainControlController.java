@@ -4,6 +4,7 @@ import group50.graphics.RunwayRenderer;
 import group50.model.Runway;
 import group50.utils.CAAParametersLoader;
 import javafx.collections.FXCollections;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -64,6 +65,11 @@ public class MainControlController  implements Initializable  {
     private TextField stopwayInput;
     @FXML
     private TextField displacedThresholdInput;
+
+    //for user role
+    @FXML private Label welcomeLabel;
+    @FXML private Button adminButton;
+    @FXML private Button editorButton;
 
     // For panning
     private double mouseAnchorX;
@@ -486,6 +492,27 @@ public class MainControlController  implements Initializable  {
         }
     }
 
+    public void setUserRole (String role) {
+        welcomeLabel.setText("Welcome, " + role.toUpperCase());
 
+    }
+
+    @FXML
+    private void handleBackToLogin(ActionEvent event) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/LoginView.fxml"));
+            Parent loginRoot = loader.load();
+
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+
+            Scene loginScene = new Scene(loginRoot);
+            stage.setScene(loginScene);
+            stage.setTitle("Login Page");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
