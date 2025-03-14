@@ -6,7 +6,7 @@
             <Length>3500</Length>
             <StripLength>3700</StripLength>
             <Stopway>200</Stopway>
-            <Clearway>400</Clearway>
+            <ClearwayLength>400</ClearwayLength>
             <DisplacedThreshold>300</DisplacedThreshold>
             <RESA>240</RESA>
             <BlastProtection>500</BlastProtection>
@@ -24,6 +24,10 @@
                 <ALS>50:1</ALS>
                 <TOCS>50:1</TOCS>
             </SurfaceSlopes>
+            <Obstacle>
+                <Distance>100</Distance>
+                <Height>13</Height>
+            </Obstacle>
         </Runway>
 
         <Runway>
@@ -31,7 +35,7 @@
             <Length>3200</Length>
             <StripLength>3400</StripLength>
             <Stopway>150</Stopway>
-            <Clearway>350</Clearway>
+            <ClearwayLength>350</ClearwayLength>
             <DisplacedThreshold>200</DisplacedThreshold>
             <RESA>240</RESA>
             <ClearedAndGradedArea>

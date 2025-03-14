@@ -3,6 +3,7 @@ package group50.controller;
 import group50.graphics.RunwayRenderer;
 import group50.model.Runway;
 import group50.utils.CAAParametersLoader;
+import java.io.File;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -27,6 +28,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+
 public class MainControlController  implements Initializable  {
     @FXML private Pane runwayView;
     @FXML private ComboBox<Runway> runwaySelector;
@@ -519,6 +527,48 @@ public class MainControlController  implements Initializable  {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void loadXML(String filename) {
+        try {
+            File xmlFile = new File(filename);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+            doc.getDocumentElement().normalize();
+
+            NodeList nList = doc.getElementsByTagName("Runway");
+
+            runwayList.clear();
+            for (int i = 0; i < nList.getLength(); i++ ) {
+                org.w3c.dom.Node nNode = nList.item(i);
+                if (nNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                    Element eElement = (Element) nNode;
+
+                    String name = eElement.getElementsByTagName("Name").item(0).getTextContent();
+                    int length = Integer.parseInt(
+                        eElement.getElementsByTagName("Length").item(0).getTextContent());
+                    int stripLength = Integer.parseInt(
+                        eElement.getElementsByTagName("StripLength").item(0).getTextContent());
+                    int stopway = Integer.parseInt(
+                        eElement.getElementsByTagName("Stopway").item(0).getTextContent());
+                    int clearwayLength = Integer.parseInt(
+                        eElement.getElementsByTagName("ClearwayLength").item(0).getTextContent());
+                    int clearwayWidth = 100;
+                    int displacedThreshold = Integer.parseInt(
+                        eElement.getElementsByTagName("DisplacedThreshold").item(0)
+                            .getTextContent());
+                    int RESA = Integer.parseInt(
+                        eElement.getElementsByTagName("RESA").item(0).getTextContent());
+                    Runway runway = new Runway(name, length, stripLength, stopway, clearwayLength,
+                        clearwayWidth, displacedThreshold, RESA);
+                    runwayList.add(i, runway);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
 
