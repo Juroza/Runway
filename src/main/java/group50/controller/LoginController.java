@@ -1,5 +1,6 @@
 package group50.controller;
 
+import group50.network.Firebase;
 import group50.utils.DatabaseManager;
 import group50.controller.MainControlController;
 import javafx.event.ActionEvent;
@@ -26,6 +27,10 @@ public class LoginController {
 
     @FXML
     public void initialize() {
+
+
+
+
         airportComboBox.getItems().addAll("LHR", "LGW", "JFK");
     }
 
@@ -35,7 +40,7 @@ public class LoginController {
 
     @FXML
     private void handleLogin(ActionEvent event) {
-        String username = usernameField.getText();
+        String username = usernameField.getText().trim();
         String password = passwordField.getText();
         String selectedAirport = airportComboBox.getValue();
 
