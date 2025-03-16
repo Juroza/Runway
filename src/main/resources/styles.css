@@ -183,3 +183,8 @@
     -fx-padding: 10px;
     -fx-border-radius: 10px;
 }
+
+#welcomeLabel, #airportLabel {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333;
+}

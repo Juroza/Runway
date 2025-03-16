@@ -14,6 +14,7 @@
       fx:controller="group50.controller.LoginController">
 
     <Label text="✈ Log In" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    <Label fx:id="airportErrorLabel" text="" style="-fx-text-fill: red; -fx-font-size: 14px;" />
 
     <TextField fx:id="usernameField" promptText="Username"
                style="-fx-font-size: 14px; -fx-padding: 10px; -fx-border-radius: 10px;"/>
@@ -24,6 +25,7 @@
     <ComboBox fx:id="airportComboBox" style="-fx-font-size: 14px; -fx-padding: 10px;">
         <items>
             <FXCollections fx:factory="observableArrayList">
+                <String fx:value="Select an airport..."/>
                 <String fx:value="LHR"/>
                 <String fx:value="LGW"/>
                 <String fx:value="JFK"/>
