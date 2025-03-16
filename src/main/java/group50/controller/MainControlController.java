@@ -76,6 +76,7 @@ public class MainControlController  implements Initializable  {
 
     //for user role
     @FXML private Label welcomeLabel;
+    @FXML private Label airportLabel;
 
     // For panning
     private double mouseAnchorX;
@@ -498,8 +499,9 @@ public class MainControlController  implements Initializable  {
         }
     }
 
-    public void setUserRole (String role) {
+    public void setUserRole (String role, String airport) {
         welcomeLabel.setText("Welcome, " + role.toUpperCase());
+        airportLabel.setText("Welcome to " + airport + "Airport!");
 
         boolean isViewer = role.equalsIgnoreCase("viewer");
 

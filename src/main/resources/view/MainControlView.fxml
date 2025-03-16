@@ -55,6 +55,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.TextField?>
 
+<?import javafx.scene.layout.HBox?>
 <VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group50.controller.MainControlController">
   <children>
     <MenuBar useSystemMenuBar="true" VBox.vgrow="NEVER">
@@ -165,10 +166,20 @@
                                <Label text="Displaced Threshold (m)" />
                                <TextField fx:id="displacedThresholdInput" promptText="Enter Displaced Threshold" />
                                <Button text="Apply Parameters" onAction="#handleApplyParameters" prefWidth="150" />
-                               <Label fx:id="welcomeLabel" text="Welcome" layoutX="50" layoutY="20"/>
+
+                               <HBox spacing="20" alignment="CENTER_LEFT">
+                                   <Label fx:id="welcomeLabel" text="Welcome, XXX"/>
+                                   <Label fx:id="airportLabel" text="Welcome to XXX Airport"/>
+                               </HBox>
+
+                               <!--<Label fx:id="welcomeLabel" text="Welcome" layoutX="50" layoutY="20"/>
+                               <Label fx:id="airportLabel" text="Welcome to XXX Airport!"
+                                      style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0044cc;"
+                                      layoutX="1100" layoutY="20" />
+                                      -->
                                <Button text="Back" fx:id="backToLoginButton" onAction="#handleBackToLogin"
-                                       style="-fx-background-color: #D32F2F; -fx-text-fill: white; -fx-font-size: 14px;
-                                        -fx-border-radius: 10px; -fx-padding: 10px; -fx-min-width: 100px;"/>
+                                       style="-fx-background-color: #D32F2F; -fx-text-fill: white; -fx-font-size: 11px;
+                                        -fx-border-radius: 8px; -fx-padding: 5px 10px; -fx-min-width: 70px; -fx-min-height: 25px;"/>
                            </children>
                         </VBox>
                      </content>

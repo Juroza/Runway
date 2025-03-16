@@ -5,6 +5,7 @@ import group50.controller.MainControlController;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -36,22 +37,30 @@ public class LoginController {
     private void handleLogin(ActionEvent event) {
         String username = usernameField.getText();
         String password = passwordField.getText();
+        String selectedAirport = airportComboBox.getValue();
+
+        if (selectedAirport == null || selectedAirport.equals("Select an airport...")) {
+            errorLabel.setText("Please choose an airport!");
+            errorLabel.setTextFill(Color.RED);
+            return;
+        }
 
         if (DatabaseManager.validateUser(username, password)) {
             String role = DatabaseManager.getUserRole(username);
-            loadMainContent(role);
+            loadMainContent(role, selectedAirport);
         } else {
             errorLabel.setText("Incorrect user name or password！");
+            errorLabel.setTextFill(Color.RED);
         }
     }
 
-    private void loadMainContent(String role) {
+    private void loadMainContent(String role, String airport) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainControlView.fxml"));
             Parent root = loader.load();
 
             MainControlController controller = loader.getController();
-            controller.setUserRole(role);
+            controller.setUserRole(role, airport);
 
             Scene scene = new Scene(root, 1980, 1080);
             scene.getStylesheets().add("styles.css");
