@@ -147,7 +147,7 @@ public class MainControlController  implements Initializable  {
             // Add the overlay back
             Node overlayNode = runwayGroupStore.lookup("#" + id);
             if (overlayNode != null) {
-                overlayNode.setId(id); // Ensure ID is set before lookup
+                overlayNode.setId(id);
                 runwayGroup.getChildren().add(overlayNode);
             } else {
                 System.out.println("Node not found for re-adding: " + id);
@@ -343,38 +343,38 @@ public class MainControlController  implements Initializable  {
 
 
            viewContainer.setOnScroll(event -> {
-               if (event.isControlDown()) {
+               if (event.isControlDown()) { // Check if pinch/zoom gesture is happening
                    double zoomFactor = event.getDeltaY() > 0 ? 1.05 : 0.95;
                    Point2D mouseInGroup = runwayGroup.sceneToLocal(event.getSceneX(), event.getSceneY());
 
+                   // **Get current scale**
                    double newScaleX = runwayGroup.getScaleX() * zoomFactor;
                    double newScaleY = runwayGroup.getScaleY() * zoomFactor;
-                   // Clamp between min and max
+
+                   // **Clamp between min and max scale**
                    newScaleX = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleX));
                    newScaleY = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleY));
 
+                   // **Apply scale**
+                   runwayGroup.setScaleX(newScaleX);
+                   runwayGroup.setScaleY(newScaleY);
 
-                   // Clamp to prevent negative or zero scale
-                   runwayGroup.setScaleX(Math.max(MIN_SCALE, newScaleX));
-                   runwayGroup.setScaleY(Math.max(MIN_SCALE, newScaleY));
-
+                   // **Ensure zoom happens at correct pivot (adjusted for rotation)**
                    Point2D newMouseInScene = runwayGroup.localToScene(mouseInGroup);
-
                    double deltaX = event.getSceneX() - newMouseInScene.getX();
                    double deltaY = event.getSceneY() - newMouseInScene.getY();
 
                    runwayGroup.setTranslateX(runwayGroup.getTranslateX() + deltaX);
                    runwayGroup.setTranslateY(runwayGroup.getTranslateY() + deltaY);
 
-               } else {
-                   // Panning with scroll
+               } else { // Normal scrolling (panning)
                    runwayGroup.setTranslateX(runwayGroup.getTranslateX() + event.getDeltaX());
                    runwayGroup.setTranslateY(runwayGroup.getTranslateY() + event.getDeltaY());
                }
                event.consume();
            });
 
-        obstacleComboBox.getItems().addAll(ObstacleManager.getObstacles());
+           obstacleComboBox.getItems().addAll(ObstacleManager.getObstacles());
 
 
 
@@ -403,18 +403,37 @@ public class MainControlController  implements Initializable  {
         runwayGroup.getChildren().addAll(objs);
         runwayGroupStore.getChildren().addAll(RunwayRenderer.generateTopDownRunway(selectedRunway));
 
-        // Get the grass area (assuming it's the first element)
+
+        runwayGroup.setRotate(0);
+        runwayGroup.setScaleX(1);
+        runwayGroup.setScaleY(1);
+
+
         Ellipse grassArea = (Ellipse) objs.get(0);
 
-        // Center the runway
-        double windowWidth = viewContainer.getWidth();
-        double windowHeight = viewContainer.getHeight();
 
-        runwayGroup.setTranslateX(-grassArea.getCenterX() + (windowWidth / 2));
-        runwayGroup.setTranslateY(-grassArea.getCenterY() + (windowHeight / 2));
+        double windowWidth = Math.max(viewContainer.getWidth(), 800);
+        double windowHeight = Math.max(viewContainer.getHeight(), 600);
 
-        storeInitialCameraPosition();  // Store the camera position after centering
+        Point2D runwayScenePos = grassArea.localToScene(grassArea.getCenterX(), grassArea.getCenterY());
+
+
+        double offsetX = (windowWidth / 2) - runwayScenePos.getX();
+        double offsetY = (windowHeight / 2) - runwayScenePos.getY();
+
+
+        runwayGroup.setTranslateX(offsetX);
+        runwayGroup.setTranslateY(offsetY);
+
+        String degree=selectedRunway.getName().substring(0,2);
+        System.out.println(degree);
+        int val=Integer.parseInt(degree)*10;        System.out.println(val);
+        runwayGroup.setRotate(val);
+        arrowImage.setRotate(val);
+        // Store the camera position after centering
+        storeInitialCameraPosition();
     }
+
 
     public void resetCameraAndZoom() {
         runwayGroup.setTranslateX(0);
@@ -423,6 +442,7 @@ public class MainControlController  implements Initializable  {
         runwayGroup.setScaleY(1);
     }
     private void loadSideOnView() {
+        // Disable overlays not relevant to side view
         showToraToggle.setDisable(true);
         showCAGToggle.setDisable(true);
         showAsdaToggle.setDisable(true);
@@ -432,31 +452,48 @@ public class MainControlController  implements Initializable  {
         showResaToggle.setDisable(false);
 
 
-        // Clear any existing shapes from the group
         runwayGroup.getChildren().clear();
         runwayGroupStore.getChildren().clear();
-        Runway selectedRunway=runwaySelector.getValue();
-        objs= RunwayRenderer.generateSideOnRunway(selectedRunway);
+
+
+        Runway selectedRunway = runwaySelector.getValue();
+
+
+        objs = RunwayRenderer.generateSideOnRunway(selectedRunway);
         runwayGroup.getChildren().addAll(objs);
         runwayGroupStore.getChildren().addAll(RunwayRenderer.generateSideOnRunway(selectedRunway));
 
-        runwayGroup.setTranslateX(0);
-        runwayGroup.setTranslateY(0);
-        double windowWidth = 800;
-        double windowHeight = 600;
 
-// Get the runway instead of grass
+        runwayGroup.setRotate(0);
+        runwayGroup.setScaleX(1);
+        runwayGroup.setScaleY(1);
+
+        // Get scene dimensions
+        double windowWidth = viewContainer.getWidth();
+        double windowHeight = viewContainer.getHeight();
+
+
         Rectangle runwayRect = (Rectangle) runwayGroup.lookup("#runway");
 
-// Compute the runway’s center in its parent
-        double runwayCenterX = (runwayRect.getWidth() / 2);
-        double runwayCenterY = (runwayRect.getHeight() / 2);
+        if (runwayRect != null) {
 
-// Translate so the camera centers on the runway
-        runwayGroup.setTranslateX(-runwayCenterX + (windowWidth / 2));
-        runwayGroup.setTranslateY(-runwayCenterY + (windowHeight / 2));
+            Point2D runwayScenePos = runwayRect.localToScene(runwayRect.getWidth() / 2, runwayRect.getHeight() / 2);
 
+
+            double offsetX = (windowWidth / 2) - runwayScenePos.getX();
+            double offsetY = (windowHeight / 2) - runwayScenePos.getY();
+
+            // **Apply translation**
+            runwayGroup.setTranslateX(offsetX);
+            runwayGroup.setTranslateY(offsetY);
+
+        }
+
+        arrowImage.setRotate(0);
+
+        storeInitialCameraPosition();
     }
+
 
 
     private Runway getSelectedRunway() {
@@ -499,19 +536,19 @@ public class MainControlController  implements Initializable  {
             Runway selectedRunway = getSelectedRunway();
 
             if (selectedRunway != null) {
-                //get old values
+
                 int oldTORA = selectedRunway.getTORA();
                 int oldTODA = selectedRunway.getTODA();
                 int oldASDA = selectedRunway.getASDA();
                 int oldLDA = selectedRunway.getLDA();
 
-                //get new parameters
+
                 int length = Integer.parseInt(lengthInput.getText());
                 int clearwayLength = Integer.parseInt(clearwayInput.getText());
                 int stopway = Integer.parseInt(stopwayInput.getText());
                 int displacedThreshold = Integer.parseInt(displacedThresholdInput.getText());
 
-                //get new parameter and recalculate
+
                 selectedRunway.applyManualParameters(selectedRunway, length, clearwayLength, stopway, displacedThreshold);
 
                 //get new values
