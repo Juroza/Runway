@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class Firebase {
-    private static final String SERVICE_ACCOUNT_JSON = "[YOUR PATH TO IT]/runway-c8831-firebase-adminsdk-fbsvc-82b0a7918b.json";
+    private static final String SERVICE_ACCOUNT_JSON = "E:/COMP/2211-coursework/otherFile/runway-c8831-firebase-adminsdk-fbsvc-82b0a7918b.json";
 
     public static boolean initialize() {
         try {
@@ -69,12 +69,18 @@ public class Firebase {
         }
     }
     public static boolean isInternetAvailable() {
-        Map<String, Object>val= readDocument("connectionTest","pinger");
-        if(val==null) return  true;
-        return false;
+        try {
+            Map<String, Object> val = readDocument("connectionTest", "pinger");
+            return val != null;
 
+            //if(val==null) return  true;
+            //return false;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-
 
 
 

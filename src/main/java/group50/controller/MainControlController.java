@@ -1,12 +1,16 @@
 package group50.controller;
 
 import group50.graphics.RunwayRenderer;
+import group50.model.Obstacle;
 import group50.model.Runway;
 import group50.utils.CAAParametersLoader;
 import java.io.File;
+
+import group50.utils.ObstacleManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -14,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.shape.Ellipse;
@@ -24,10 +29,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.w3c.dom.Document;
@@ -39,6 +41,7 @@ public class MainControlController  implements Initializable  {
     @FXML private Pane runwayView;
     @FXML private ComboBox<Runway> runwaySelector;
     @FXML private ComboBox<String> viewTypeSelector;
+    @FXML private ComboBox<Obstacle> obstacleComboBox;
     @FXML private RadioButton showCAGToggle;
     @FXML private RadioButton showClearwayToggle;
     @FXML
@@ -73,6 +76,10 @@ public class MainControlController  implements Initializable  {
     private TextField stopwayInput;
     @FXML
     private TextField displacedThresholdInput;
+
+    //for add obstacle
+    @FXML private Button addObstacleButton;
+    @FXML private Label obstacleNotificationLabel;
 
     //for user role
     @FXML private Label welcomeLabel;
@@ -335,7 +342,7 @@ public class MainControlController  implements Initializable  {
             event.consume();
         });
 
-
+        obstacleComboBox.getItems().addAll(ObstacleManager.getObstacles());
 
 
 
@@ -432,6 +439,8 @@ public class MainControlController  implements Initializable  {
                 alert.setTitle("Invalid Parameters");
                 alert.setHeaderText(null);
                 alert.setContentText("Please enter all runway parameters");
+                ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+                alert.getButtonTypes().setAll(okButton);
                 alert.showAndWait();
                 return;
             }
@@ -440,6 +449,8 @@ public class MainControlController  implements Initializable  {
                 alert.setTitle("Warning");
                 alert.setHeaderText(null);
                 alert.setContentText("Runway Length too short for operation");
+                ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+                alert.getButtonTypes().setAll(okButton);
                 alert.showAndWait();
                 return;
             }
@@ -488,6 +499,8 @@ public class MainControlController  implements Initializable  {
             alert.setTitle("Invalid Value");
             alert.setHeaderText(null);
             alert.setContentText("Please enter valid number");
+            ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            alert.getButtonTypes().setAll(okButton);
             alert.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
@@ -495,6 +508,8 @@ public class MainControlController  implements Initializable  {
             alert.setTitle("Fail");
             alert.setHeaderText(null);
             alert.setContentText("Failed to load comparison view ");
+            ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+            alert.getButtonTypes().setAll(okButton);
             alert.showAndWait();
         }
     }
@@ -571,6 +586,65 @@ public class MainControlController  implements Initializable  {
             e.printStackTrace();
         }
 
+    }
+
+    @FXML
+    private void handleAddObstacle() {
+        Dialog<Obstacle> dialog = new Dialog<>();
+        dialog.setTitle("Add New Obstacle");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(50);
+        grid.setVgap(50);
+        grid.setPadding(new Insets(40));
+
+        TextField idField = new TextField();
+        idField.setPromptText("Enter ID");
+
+        TextField heightField = new TextField();
+        heightField.setPromptText("Enter Height (m)");
+
+        TextField distanceField = new TextField();
+        distanceField.setPromptText("Enter Distance (m)");
+
+        grid.add(new Label("ID:"), 0, 0);
+        grid.add(idField, 1, 0);
+        grid.add(new Label("Height (m):"), 0, 1);
+        grid.add(heightField, 1, 1);
+        grid.add(new Label("Distance (m):"), 0, 2);
+        grid.add(distanceField, 1, 2);
+
+        dialog.getDialogPane().setContent(grid);
+
+        ButtonType addButton = new ButtonType("Add", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().setAll(addButton, cancelButton);
+
+        dialog.setResultConverter(buttonType -> {
+            if (buttonType == addButton) {
+                try {
+                    int id = Integer.parseInt(idField.getText().trim());
+                    int height = Integer.parseInt(heightField.getText().trim());
+                    int distance = Integer.parseInt(distanceField.getText().trim());
+
+                    return new Obstacle(id, height, distance);
+                } catch (NumberFormatException e) {
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Invalid Input");
+                    errorAlert.setHeaderText(null);
+                    errorAlert.setContentText("Please enter valid numbers for ID, Height, and Distance.");
+                    errorAlert.showAndWait();
+                    return null;
+                }
+            }
+            return null;
+        });
+
+        Optional<Obstacle> result = dialog.showAndWait();
+        result.ifPresent(obstacle -> {
+            obstacleComboBox.getItems().add(obstacle);
+            obstacleComboBox.setValue(obstacle);
+        });
     }
 }
 
