@@ -70,10 +70,9 @@ public class Firebase {
     }
     public static boolean isInternetAvailable() {
         Map<String, Object>val= readDocument("connectionTest","pinger");
-        return val != null;
-
+            if(val==null) return  true;
+            return false;
     }
-
 
 
 

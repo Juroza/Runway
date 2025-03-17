@@ -155,7 +155,16 @@
                                     <RadioButton fx:id="showALSToggle" mnemonicParsing="false" onAction="#handleALSOverlayShow" styleClass="wii-radio-button" text="ALS" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                  </children>
                               </GridPane>
-                              <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="165.0" text="Add Obstacle" />
+
+                               <HBox spacing="10" alignment="CENTER_LEFT">
+                                   <ComboBox fx:id="obstacleComboBox" promptText="Choose an Obstacle"
+                                             style="-fx-pref-width: 250px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
+                                   <Button text="Add Obstacle" fx:id="addObstacleButton"
+                                           mnemonicParsing="false" onAction="#handleAddObstacle"
+                                           style="-fx-background-color: #FFD700; -fx-text-fill: black;
+                                                   -fx-font-size: 14px; -fx-pref-width: 170px; -fx-pref-height: 40px; -fx-border-radius: 5px;"/>
+                               </HBox>
+
                                <Label text="Manual Runway Parameters Input" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
                                <Label text="Length (m)" />
                                <TextField fx:id="lengthInput" promptText="Enter Runway Length" />
@@ -166,17 +175,10 @@
                                <Label text="Displaced Threshold (m)" />
                                <TextField fx:id="displacedThresholdInput" promptText="Enter Displaced Threshold" />
                                <Button text="Apply Parameters" onAction="#handleApplyParameters" prefWidth="150" />
-
                                <HBox spacing="20" alignment="CENTER_LEFT">
                                    <Label fx:id="welcomeLabel" text="Welcome, XXX"/>
                                    <Label fx:id="airportLabel" text="Welcome to XXX Airport"/>
                                </HBox>
-
-                               <!--<Label fx:id="welcomeLabel" text="Welcome" layoutX="50" layoutY="20"/>
-                               <Label fx:id="airportLabel" text="Welcome to XXX Airport!"
-                                      style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #0044cc;"
-                                      layoutX="1100" layoutY="20" />
-                                      -->
                                <Button text="Back" fx:id="backToLoginButton" onAction="#handleBackToLogin"
                                        style="-fx-background-color: #D32F2F; -fx-text-fill: white; -fx-font-size: 11px;
                                         -fx-border-radius: 8px; -fx-padding: 5px 10px; -fx-min-width: 70px; -fx-min-height: 25px;"/>

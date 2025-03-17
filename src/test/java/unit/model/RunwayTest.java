@@ -24,6 +24,7 @@ class RunwayTest {
     final int RESA = 240;
 
     final int BLAST_PROTECTION = 300;
+    final int OBSTACLE_NAME = 1;
     final int OBSTACLE_DISTANCE = 500;
     final int OBSTACLE_HEIGHT = 25;
     final int STRIP_END_OFFSET = 60;
@@ -92,7 +93,7 @@ class RunwayTest {
         void setup() {
             runway = new Runway(RUNWAY_NAME, LENGTH, STRIP_LENGTH, STOPWAY, CLEARWAY_LENGTH, CLEARWAY_WIDTH, DISPLACED_THRESHOLD, RESA);
             runway.setBlastProtection(BLAST_PROTECTION);
-            runway.setObstacle(new Obstacle(OBSTACLE_HEIGHT,OBSTACLE_DISTANCE));
+            runway.setObstacle(new Obstacle(OBSTACLE_NAME,OBSTACLE_HEIGHT,OBSTACLE_DISTANCE));
             runway.redeclareALL();
 
         }
