@@ -18,7 +18,7 @@ public class LoginController {
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
     @FXML private Label errorLabel;
-
+    @FXML private Button loginButton;
     @FXML
     private ComboBox<String> airportComboBox;
 
@@ -40,6 +40,7 @@ public class LoginController {
 
     @FXML
     private void handleLogin(ActionEvent event) {
+        loginButton.setDisable(true);
         String username = usernameField.getText().trim();
         String password = passwordField.getText();
         String selectedAirport = airportComboBox.getValue();
@@ -54,9 +55,11 @@ public class LoginController {
             String role = DatabaseManager.getUserRole(username);
             loadMainContent(role, selectedAirport);
         } else {
+
             errorLabel.setText("Incorrect user name or password！");
             errorLabel.setTextFill(Color.RED);
         }
+        loginButton.setDisable(false);
     }
 
     private void loadMainContent(String role, String airport) {
