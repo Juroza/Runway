@@ -33,28 +33,32 @@
 
         <Runway>
             <Name>27R</Name>
-            <Length>80</Length>
-            <StripLength>3400</StripLength>
-            <Stopway>1500</Stopway>
-            <ClearwayLength>350</ClearwayLength>
-            <ClearwayWidth>600</ClearwayWidth>
-            <DisplacedThreshold>200</DisplacedThreshold>
+            <Length>5500</Length>
+            <StripLength>3700</StripLength>
+            <Stopway>200</Stopway>
+            <ClearwayLength>400</ClearwayLength>
+            <ClearwayWidth>1000</ClearwayWidth>
+            <DisplacedThreshold>300</DisplacedThreshold>
             <RESA>240</RESA>
+            <BlastProtection>500</BlastProtection>
             <ClearedAndGradedArea>
-                <Width>300</Width>
+                <Width>600</Width>
                 <LengthBeyondRunway>150</LengthBeyondRunway>
             </ClearedAndGradedArea>
-            <BlastProtection>389</BlastProtection>
             <DeclaredDistances>
-                <TORA>3200</TORA>
-                <TODA>3550</TODA>
-                <ASDA>3350</ASDA>
-                <LDA>3000</LDA>
+                <TORA>3500</TORA>
+                <TODA>3900</TODA>
+                <ASDA>3700</ASDA>
+                <LDA>3500</LDA>
             </DeclaredDistances>
             <SurfaceSlopes>
                 <ALS>50:1</ALS>
                 <TOCS>50:1</TOCS>
             </SurfaceSlopes>
+            <Obstacle>
+                <Distance>100</Distance>
+                <Height>13</Height>
+            </Obstacle>
         </Runway>
     </Runways>
 </Airport>
