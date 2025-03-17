@@ -24,7 +24,7 @@ class RunwayTest {
     final int RESA = 240;
 
     final int BLAST_PROTECTION = 300;
-    final int OBSTACLE_NAME = 1;
+    final String  OBSTACLE_NAME = "name";
     final int OBSTACLE_DISTANCE = 500;
     final int OBSTACLE_HEIGHT = 25;
     final int STRIP_END_OFFSET = 60;

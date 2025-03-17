@@ -2,6 +2,7 @@ package group50;
 import com.google.cloud.firestore.DocumentReference;
 import com.google.cloud.firestore.Firestore;
 import group50.network.Firebase;
+import group50.utils.DatabaseManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert;

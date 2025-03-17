@@ -29,7 +29,7 @@ public class Runway {
 
   private int STRIPENDOFFSET = 60;
 
-  private Obstacle obstacle = new Obstacle(1,0, 0);
+  private Obstacle obstacle = new Obstacle("name",0, 0);
 
   private Boolean hasObstacle() {
     return obstacle.getHeight() != 0;
