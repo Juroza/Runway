@@ -3,9 +3,11 @@ package group50.controller;
 import group50.graphics.RunwayRenderer;
 import group50.model.Obstacle;
 import group50.model.Runway;
+import group50.network.Firebase;
 import group50.utils.CAAParametersLoader;
 import java.io.File;
 
+import group50.utils.DatabaseManager;
 import group50.utils.ObstacleManager;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -85,7 +87,7 @@ public class MainControlController  implements Initializable  {
     //for user role
     @FXML private Label welcomeLabel;
     @FXML private Label airportLabel;
-
+    @FXML private MenuBar controlMenu;
     // For panning
     private double mouseAnchorX;
     private double mouseAnchorY;
@@ -98,6 +100,9 @@ public class MainControlController  implements Initializable  {
     private boolean switchingViews=false;
 
     List<Node> objs= new ArrayList<>();
+    private String username;
+    private String role;
+    private String password;
 
     // The group that will hold rectangles (grass + runway)
     private Group runwayGroup = new Group();
@@ -269,7 +274,6 @@ public class MainControlController  implements Initializable  {
 
 
 
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
        try {
@@ -282,6 +286,10 @@ public class MainControlController  implements Initializable  {
                throw new RuntimeException();
 
            }
+
+
+
+
            arrowImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/arrow.png"))));
            arrowImage.setScaleX(2);
            allowOnlyDigits(lengthInput);
@@ -765,6 +773,38 @@ public class MainControlController  implements Initializable  {
             obstacleComboBox.getItems().add(obstacle);
             obstacleComboBox.setValue(obstacle);
         });
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+        if(Objects.equals(DatabaseManager.getUserRole(username), "admin")){
+            Menu menuItem = new Menu("Users");
+            //  nuItem.setOnAction(event -> System.out.println(itemName + " clicked!"));
+            MenuItem addUsers= new MenuItem("Add User");
+            addUsers.setOnAction(event->{}); //TODO
+            menuItem.getItems().add(addUsers);
+            controlMenu.getMenus().add(menuItem);
+        }
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
 

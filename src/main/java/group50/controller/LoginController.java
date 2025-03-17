@@ -53,7 +53,7 @@ public class LoginController {
 
         if (DatabaseManager.validateUser(username, password)) {
             String role = DatabaseManager.getUserRole(username);
-            loadMainContent(role, selectedAirport);
+            loadMainContent(role,username, selectedAirport);
         } else {
 
             errorLabel.setText("Incorrect user name or password！");
@@ -62,13 +62,15 @@ public class LoginController {
         loginButton.setDisable(false);
     }
 
-    private void loadMainContent(String role, String airport) {
+    private void loadMainContent(String role,String username, String airport) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainControlView.fxml"));
             Parent root = loader.load();
 
             MainControlController controller = loader.getController();
             controller.setUserRole(role, airport);
+            controller.setUsername(username);
+            controller.setRole(role);
 
             Scene scene = new Scene(root, 1980, 1080);
             scene.getStylesheets().add("styles.css");
