@@ -2,6 +2,7 @@ package group50.utils;
 
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
+import group50.model.Obstacle;
 import group50.network.Firebase;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.DocumentSnapshot;
@@ -10,9 +11,8 @@ import com.google.cloud.firestore.Query;
 import com.google.cloud.firestore.QueryDocumentSnapshot;
 import com.google.cloud.firestore.QuerySnapshot;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import java.sql.*;
@@ -20,7 +20,7 @@ import java.util.List;
 
 public class DatabaseManager {
 
-
+    private static final String URL = "jdbc:sqlite:database.db";
 
 
 
@@ -117,5 +117,4 @@ public class DatabaseManager {
             return "";
         }
     }
-
 }

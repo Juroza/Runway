@@ -20,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.fxml.FXMLLoader;
@@ -284,7 +285,6 @@ public class MainControlController  implements Initializable  {
                alert.setContentText("Airport File required");
                alert.showAndWait();
                throw new RuntimeException();
-
            }
 
 
@@ -389,6 +389,7 @@ public class MainControlController  implements Initializable  {
        }catch (RuntimeException e){
            throw new RuntimeException();
        }
+
 
     }
 
@@ -720,14 +721,15 @@ public class MainControlController  implements Initializable  {
     private void handleAddObstacle() {
         Dialog<Obstacle> dialog = new Dialog<>();
         dialog.setTitle("Add New Obstacle");
+        dialog.setHeaderText("Enter details for the new obstacle:");
 
         GridPane grid = new GridPane();
         grid.setHgap(50);
         grid.setVgap(50);
-        grid.setPadding(new Insets(40));
+        grid.setPadding(new Insets(20, 150, 10, 10));
 
-        TextField idField = new TextField();
-        idField.setPromptText("Enter ID");
+        TextField nameField = new TextField();
+        nameField.setPromptText("Enter Name");
 
         TextField heightField = new TextField();
         heightField.setPromptText("Enter Height (m)");
@@ -735,8 +737,8 @@ public class MainControlController  implements Initializable  {
         TextField distanceField = new TextField();
         distanceField.setPromptText("Enter Distance (m)");
 
-        grid.add(new Label("ID:"), 0, 0);
-        grid.add(idField, 1, 0);
+        grid.add(new Label("Name:"), 0, 0);
+        grid.add(nameField, 1, 0);
         grid.add(new Label("Height (m):"), 0, 1);
         grid.add(heightField, 1, 1);
         grid.add(new Label("Distance (m):"), 0, 2);
@@ -751,17 +753,18 @@ public class MainControlController  implements Initializable  {
         dialog.setResultConverter(buttonType -> {
             if (buttonType == addButton) {
                 try {
-                    int id = Integer.parseInt(idField.getText().trim());
+                    String name = nameField.getText().trim();
                     int height = Integer.parseInt(heightField.getText().trim());
                     int distance = Integer.parseInt(distanceField.getText().trim());
 
-                    return new Obstacle(id, height, distance);
+                    if (name.isEmpty() || height <= 0 || distance < 0) {
+                        showError("Invalid Input", "Please enter valid obstacle details.");
+                        return null;
+                    }
+                    return new Obstacle(name, height, distance);
+
                 } catch (NumberFormatException e) {
-                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                    errorAlert.setTitle("Invalid Input");
-                    errorAlert.setHeaderText(null);
-                    errorAlert.setContentText("Please enter valid numbers for ID, Height, and Distance.");
-                    errorAlert.showAndWait();
+                    showError("Invalid Input", "Please enter valid numbers for Height and Distance.");
                     return null;
                 }
             }
@@ -769,10 +772,18 @@ public class MainControlController  implements Initializable  {
         });
 
         Optional<Obstacle> result = dialog.showAndWait();
-        result.ifPresent(obstacle -> {
-            obstacleComboBox.getItems().add(obstacle);
-            obstacleComboBox.setValue(obstacle);
-        });
+        result.ifPresent(this::addObstacleToList);
+    }
+    private void showError(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+    private void addObstacleToList(Obstacle obstacle) {
+        obstacleComboBox.getItems().add(obstacle);
+        obstacleComboBox.setValue(obstacle);
     }
 
     public String getUsername() {
@@ -806,5 +817,6 @@ public class MainControlController  implements Initializable  {
     public void setPassword(String password) {
         this.password = password;
     }
+
 }
 
