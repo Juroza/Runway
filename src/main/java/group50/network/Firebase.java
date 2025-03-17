@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class Firebase {
-    private static final String SERVICE_ACCOUNT_JSON = "[YOUR Path]/runway-c8831-firebase-adminsdk-fbsvc-82b0a7918b.json";
+    private static final String SERVICE_ACCOUNT_JSON = "runway-c8831-firebase-adminsdk-fbsvc-82b0a7918b.json";
 
     public static boolean initialize() {
         try {

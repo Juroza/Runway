@@ -20,6 +20,7 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.Group;
 import javafx.fxml.Initializable;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -46,7 +47,7 @@ public class MainControlController  implements Initializable  {
     private static final double MIN_SCALE = 0.0000001;
     private static final double MAX_SCALE = 50000.0;
 
-    List<Runway> runwayList;
+    List<Runway> runwayList= new ArrayList<>();
 
     @FXML
     private Pane viewContainer;
@@ -187,6 +188,8 @@ public class MainControlController  implements Initializable  {
             resetControlPanel();
         }
     }
+
+
     public void updateView() {
         String type = viewTypeSelector.getSelectionModel().getSelectedItem();
         resetCameraAndZoom();
@@ -207,6 +210,30 @@ public class MainControlController  implements Initializable  {
     public void handleCAGOverlayShow(){
         handleOverlayToggle("CAG",showCAGToggle);
     }
+    @FXML
+    public boolean handleImportFile() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Open Airport File");
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("XML Files", "*.xml")
+        );
+
+
+        Stage stage = new Stage();
+
+
+        File file = fileChooser.showOpenDialog(stage);
+
+        if (file != null) {
+            System.out.println("File selected: " + file.getAbsolutePath());
+            loadXML(file);
+            return true;
+        }
+        return false;
+    }
+
+
 
 
     private void resetControlPanel(){
@@ -238,107 +265,115 @@ public class MainControlController  implements Initializable  {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        arrowImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/arrow.png"))));
-        arrowImage.setScaleX(2);
-        allowOnlyDigits(lengthInput);
-        allowOnlyDigits(clearwayInput);
-        allowOnlyDigits(stopwayInput);
-        allowOnlyDigits(displacedThresholdInput);
-        runwayList= new ArrayList<Runway>();
-        Runway run1= new Runway("runner",3000,3000,60,500,600,0,60);
-        run1.setClearedAndGradedWidth(3500);
-        run1.setClearedAndGradedLengthBeyondRunwayEnds(600);
-        runwayList.add(run1);
-        viewTypeSelector.getSelectionModel().select(0);
+       try {
+           if(!handleImportFile()){
+               Alert alert = new Alert (Alert.AlertType.WARNING);
+               alert.setTitle("Couldnt Load Airport File");
+               alert.setHeaderText(null);
+               alert.setContentText("Airport File required");
+               alert.showAndWait();
+               throw new RuntimeException();
 
-        viewContainer.getChildren().add(runwayGroup);
+           }
+           arrowImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/arrow.png"))));
+           arrowImage.setScaleX(2);
+           allowOnlyDigits(lengthInput);
+           allowOnlyDigits(clearwayInput);
+           allowOnlyDigits(stopwayInput);
+           allowOnlyDigits(displacedThresholdInput);
+           viewTypeSelector.getSelectionModel().select(0);
 
-        loadTopDownView();
-        overlayRunThrough();
+           viewContainer.getChildren().add(runwayGroup);
 
-        runwaySelector.setItems(FXCollections.observableArrayList(runwayList));
-        if (!runwayList.isEmpty()) {
-            runwaySelector.getSelectionModel().select(0);
-        }
+           loadTopDownView();
+           overlayRunThrough();
 
-
-
-        viewContainer.setOnMousePressed(event -> {
-            mouseAnchorX = event.getSceneX();
-            mouseAnchorY = event.getSceneY();
-            initialTranslateX = runwayGroup.getTranslateX();
-            initialTranslateY = runwayGroup.getTranslateY();
-        });
-
-        viewContainer.setOnMouseDragged(event -> {
-            double deltaX = event.getSceneX() - mouseAnchorX;
-            double deltaY = event.getSceneY() - mouseAnchorY;
-            runwayGroup.setTranslateX(initialTranslateX + deltaX);
-            runwayGroup.setTranslateY(initialTranslateY + deltaY);
-        });
-        runwayGroup.setOnZoom(event -> {
-            double zoomFactor = event.getZoomFactor();
-            Point2D pivotInGroup = runwayGroup.sceneToLocal(event.getSceneX(), event.getSceneY());
-
-            double newScaleX = runwayGroup.getScaleX() * zoomFactor;
-            double newScaleY = runwayGroup.getScaleY() * zoomFactor;
-
-            // Clamp to prevent negative or zero scale
-            // Clamp between min and max
-            newScaleX = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleX));
-            newScaleY = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleY));
-
-            runwayGroup.setScaleX(Math.max(MIN_SCALE, newScaleX));
-            runwayGroup.setScaleY(Math.max(MIN_SCALE, newScaleY));
-
-            Point2D pivotInScene = runwayGroup.localToScene(pivotInGroup);
-
-            double dx = event.getSceneX() - pivotInScene.getX();
-            double dy = event.getSceneY() - pivotInScene.getY();
-
-            runwayGroup.setTranslateX(runwayGroup.getTranslateX() + dx);
-            runwayGroup.setTranslateY(runwayGroup.getTranslateY() + dy);
-
-            event.consume();
-        });
-
-
-        viewContainer.setOnScroll(event -> {
-            if (event.isControlDown()) {
-                double zoomFactor = event.getDeltaY() > 0 ? 1.05 : 0.95;
-                Point2D mouseInGroup = runwayGroup.sceneToLocal(event.getSceneX(), event.getSceneY());
-
-                double newScaleX = runwayGroup.getScaleX() * zoomFactor;
-                double newScaleY = runwayGroup.getScaleY() * zoomFactor;
-                // Clamp between min and max
-                newScaleX = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleX));
-                newScaleY = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleY));
-
-
-                // Clamp to prevent negative or zero scale
-                runwayGroup.setScaleX(Math.max(MIN_SCALE, newScaleX));
-                runwayGroup.setScaleY(Math.max(MIN_SCALE, newScaleY));
-
-                Point2D newMouseInScene = runwayGroup.localToScene(mouseInGroup);
-
-                double deltaX = event.getSceneX() - newMouseInScene.getX();
-                double deltaY = event.getSceneY() - newMouseInScene.getY();
-
-                runwayGroup.setTranslateX(runwayGroup.getTranslateX() + deltaX);
-                runwayGroup.setTranslateY(runwayGroup.getTranslateY() + deltaY);
-
-            } else {
-                // Panning with scroll
-                runwayGroup.setTranslateX(runwayGroup.getTranslateX() + event.getDeltaX());
-                runwayGroup.setTranslateY(runwayGroup.getTranslateY() + event.getDeltaY());
-            }
-            event.consume();
-        });
+           runwaySelector.setItems(FXCollections.observableArrayList(runwayList));
+           if (!runwayList.isEmpty()) {
+               runwaySelector.getSelectionModel().select(0);
+           }
 
 
 
+           viewContainer.setOnMousePressed(event -> {
+               mouseAnchorX = event.getSceneX();
+               mouseAnchorY = event.getSceneY();
+               initialTranslateX = runwayGroup.getTranslateX();
+               initialTranslateY = runwayGroup.getTranslateY();
+           });
+
+           viewContainer.setOnMouseDragged(event -> {
+               double deltaX = event.getSceneX() - mouseAnchorX;
+               double deltaY = event.getSceneY() - mouseAnchorY;
+               runwayGroup.setTranslateX(initialTranslateX + deltaX);
+               runwayGroup.setTranslateY(initialTranslateY + deltaY);
+           });
+           runwayGroup.setOnZoom(event -> {
+               double zoomFactor = event.getZoomFactor();
+               Point2D pivotInGroup = runwayGroup.sceneToLocal(event.getSceneX(), event.getSceneY());
+
+               double newScaleX = runwayGroup.getScaleX() * zoomFactor;
+               double newScaleY = runwayGroup.getScaleY() * zoomFactor;
+
+               // Clamp to prevent negative or zero scale
+               // Clamp between min and max
+               newScaleX = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleX));
+               newScaleY = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleY));
+
+               runwayGroup.setScaleX(Math.max(MIN_SCALE, newScaleX));
+               runwayGroup.setScaleY(Math.max(MIN_SCALE, newScaleY));
+
+               Point2D pivotInScene = runwayGroup.localToScene(pivotInGroup);
+
+               double dx = event.getSceneX() - pivotInScene.getX();
+               double dy = event.getSceneY() - pivotInScene.getY();
+
+               runwayGroup.setTranslateX(runwayGroup.getTranslateX() + dx);
+               runwayGroup.setTranslateY(runwayGroup.getTranslateY() + dy);
+
+               event.consume();
+           });
 
 
+           viewContainer.setOnScroll(event -> {
+               if (event.isControlDown()) {
+                   double zoomFactor = event.getDeltaY() > 0 ? 1.05 : 0.95;
+                   Point2D mouseInGroup = runwayGroup.sceneToLocal(event.getSceneX(), event.getSceneY());
+
+                   double newScaleX = runwayGroup.getScaleX() * zoomFactor;
+                   double newScaleY = runwayGroup.getScaleY() * zoomFactor;
+                   // Clamp between min and max
+                   newScaleX = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleX));
+                   newScaleY = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScaleY));
+
+
+                   // Clamp to prevent negative or zero scale
+                   runwayGroup.setScaleX(Math.max(MIN_SCALE, newScaleX));
+                   runwayGroup.setScaleY(Math.max(MIN_SCALE, newScaleY));
+
+                   Point2D newMouseInScene = runwayGroup.localToScene(mouseInGroup);
+
+                   double deltaX = event.getSceneX() - newMouseInScene.getX();
+                   double deltaY = event.getSceneY() - newMouseInScene.getY();
+
+                   runwayGroup.setTranslateX(runwayGroup.getTranslateX() + deltaX);
+                   runwayGroup.setTranslateY(runwayGroup.getTranslateY() + deltaY);
+
+               } else {
+                   // Panning with scroll
+                   runwayGroup.setTranslateX(runwayGroup.getTranslateX() + event.getDeltaX());
+                   runwayGroup.setTranslateY(runwayGroup.getTranslateY() + event.getDeltaY());
+               }
+               event.consume();
+           });
+
+
+
+
+
+       }catch (RuntimeException e){
+           throw new RuntimeException();
+       }
 
     }
 
@@ -351,23 +386,29 @@ public class MainControlController  implements Initializable  {
         showClearwayToggle.setDisable(false);
         showALSToggle.setDisable(true);
         showResaToggle.setDisable(true);
-        // Clear any existing shapes from the group
+
+        // Clear previous elements, keep event listeners intact
         runwayGroup.getChildren().clear();
         runwayGroupStore.getChildren().clear();
-       objs= RunwayRenderer.generateTopDownRunway(runwayList.get(0));
+
+        Runway selectedRunway = runwaySelector.getValue();
+        objs = RunwayRenderer.generateTopDownRunway(selectedRunway);
         runwayGroup.getChildren().addAll(objs);
-        runwayGroupStore.getChildren().addAll(RunwayRenderer.generateTopDownRunway(runwayList.get(0)));
+        runwayGroupStore.getChildren().addAll(RunwayRenderer.generateTopDownRunway(selectedRunway));
 
-
-        runwayGroup.setTranslateX(0);
-        runwayGroup.setTranslateY(0);
-        double windowWidth = 800;
-        double windowHeight = 600;
+        // Get the grass area (assuming it's the first element)
         Ellipse grassArea = (Ellipse) objs.get(0);
-        runwayGroup.setTranslateX(-grassArea.getCenterX() + (windowWidth/ 2));
-        runwayGroup.setTranslateY(-grassArea.getCenterY() + windowHeight/ 2);
-        storeInitialCameraPosition();
+
+        // Center the runway
+        double windowWidth = viewContainer.getWidth();
+        double windowHeight = viewContainer.getHeight();
+
+        runwayGroup.setTranslateX(-grassArea.getCenterX() + (windowWidth / 2));
+        runwayGroup.setTranslateY(-grassArea.getCenterY() + (windowHeight / 2));
+
+        storeInitialCameraPosition();  // Store the camera position after centering
     }
+
     public void resetCameraAndZoom() {
         runwayGroup.setTranslateX(0);
         runwayGroup.setTranslateY(0);
@@ -387,9 +428,10 @@ public class MainControlController  implements Initializable  {
         // Clear any existing shapes from the group
         runwayGroup.getChildren().clear();
         runwayGroupStore.getChildren().clear();
-        objs= RunwayRenderer.generateSideOnRunway(runwayList.get(0));
+        Runway selectedRunway=runwaySelector.getValue();
+        objs= RunwayRenderer.generateSideOnRunway(selectedRunway);
         runwayGroup.getChildren().addAll(objs);
-        runwayGroupStore.getChildren().addAll(RunwayRenderer.generateSideOnRunway(runwayList.get(0)));
+        runwayGroupStore.getChildren().addAll(RunwayRenderer.generateSideOnRunway(selectedRunway));
 
         runwayGroup.setTranslateX(0);
         runwayGroup.setTranslateY(0);
@@ -531,9 +573,8 @@ public class MainControlController  implements Initializable  {
         }
     }
 
-    public void loadXML(String filename) {
+    public void loadXML(File xmlFile) {
         try {
-            File xmlFile = new File(filename);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(xmlFile);
@@ -547,30 +588,72 @@ public class MainControlController  implements Initializable  {
                 if (nNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
 
-                    String name = eElement.getElementsByTagName("Name").item(0).getTextContent();
-                    int length = Integer.parseInt(
-                        eElement.getElementsByTagName("Length").item(0).getTextContent());
-                    int stripLength = Integer.parseInt(
-                        eElement.getElementsByTagName("StripLength").item(0).getTextContent());
-                    int stopway = Integer.parseInt(
-                        eElement.getElementsByTagName("Stopway").item(0).getTextContent());
-                    int clearwayLength = Integer.parseInt(
-                        eElement.getElementsByTagName("ClearwayLength").item(0).getTextContent());
-                    int clearwayWidth = 100;
-                    int displacedThreshold = Integer.parseInt(
-                        eElement.getElementsByTagName("DisplacedThreshold").item(0)
-                            .getTextContent());
-                    int RESA = Integer.parseInt(
-                        eElement.getElementsByTagName("RESA").item(0).getTextContent());
+                    String name = getTextContent(eElement, "Name");
+                    int length = getIntContent(eElement, "Length");
+                    int stripLength = getIntContent(eElement, "StripLength");
+                    int stopway = getIntContent(eElement, "Stopway");
+                    int clearwayLength = getIntContent(eElement, "ClearwayLength");
+                    int clearwayWidth =getIntContent(eElement, "ClearwayWidth");
+
+                    int displacedThreshold = getIntContent(eElement, "DisplacedThreshold");
+                    int RESA = getIntContent(eElement, "RESA");
+
                     Runway runway = new Runway(name, length, stripLength, stopway, clearwayLength,
-                        clearwayWidth, displacedThreshold, RESA);
-                    runwayList.add(i, runway);
+                            clearwayWidth, displacedThreshold, RESA);
+                    NodeList list = doc.getElementsByTagName("ClearedAndGradedArea");
+                    if (list.getLength() > 0) {
+                        Element clearedArea = (Element) list.item(0);
+
+
+                        String width = clearedArea.getElementsByTagName("Width").item(0).getTextContent();
+                        int widthValue = Integer.parseInt(width);
+
+
+                        String lengtha = clearedArea.getElementsByTagName("LengthBeyondRunway").item(0).getTextContent();
+                        int lengthValue = Integer.parseInt(lengtha);
+
+                        System.out.println("Width: " + widthValue);
+                        System.out.println("Length Beyond Runway: " + lengthValue);
+                        runway.setClearedAndGradedWidth(widthValue);
+                        runway.setClearedAndGradedLengthBeyondRunwayEnds(lengthValue);
+                    }
+                   runwayList.add(runway);
                 }
             }
+            updateRunwaySelector();
+            System.out.println("Loaded " + runwayList.size() + " runways from XML.");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    // Helper method to safely get text content from XML elements
+    private String getTextContent(Element element, String tag) {
+        NodeList nodeList = element.getElementsByTagName(tag);
+        return (nodeList.getLength() > 0) ? nodeList.item(0).getTextContent() : "Unknown";
+    }
+
+    // Helper method to safely parse integers from XML
+    private int getIntContent(Element element, String tag) {
+        try {
+            return Integer.parseInt(getTextContent(element, tag));
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid number format for " + tag);
+            return 0; // Default to 0 if invalid
+        }
+    }
+    private void updateRunwaySelector() {
+        if (runwaySelector != null) {
+
+            runwaySelector.setItems(FXCollections.observableArrayList(runwayList));
+
+
+            if (!runwayList.isEmpty()) {
+                runwaySelector.getSelectionModel().select(0);
+            }
+        } else {
+            System.err.println("runwaySelector is null. Check if FXML is properly linked.");
+        }
     }
 }
 
