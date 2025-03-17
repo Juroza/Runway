@@ -60,7 +60,7 @@ public class RunwayRenderer {
                 grassImage.getHeight(),       // The repeating tile height
                 false                         // Use absolute coordinates (not proportional)
         );
-        Ellipse grassArea= new Ellipse(runwayInput.getLength()*10*2,runwayInput.getLength()*10);
+        Ellipse grassArea= new Ellipse(stopwayRect.getWidth()+1000,stopwayRect.getWidth()+900);
         grassArea.setFill(grassPattern);
 
         Rectangle toraRect= new Rectangle(runwayInput.getTORA()*10,600, TORA);

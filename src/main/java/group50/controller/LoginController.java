@@ -79,8 +79,9 @@ public class LoginController {
             this.stage.setTitle("Runway");
             this.stage.show();
 
+        }catch (RuntimeException e){
+
         } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
