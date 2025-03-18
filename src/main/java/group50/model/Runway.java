@@ -44,28 +44,29 @@ public class Runway {
 
   private int calculateTORA() {
     if (!hasObstacle()) return length;
-    if (obstacle.getDistance() < 0) return round(length - abs(obstacle.getDistance()) - STRIPENDOFFSET - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
+    if (obstacle.getDistance() > length / 2) return round(length - (length - obstacle.getDistance()) - STRIPENDOFFSET - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
     return length - obstacle.getDistance() - blastProtection;
   }
 
   private int calculateASDA() {
     if (!hasObstacle()) return length + stopway;
-    if (obstacle.getDistance() < 0) return round(length - abs(obstacle.getDistance()) - STRIPENDOFFSET - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
+    if (obstacle.getDistance() > length / 2) return round(length - (length - obstacle.getDistance()) - STRIPENDOFFSET - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
     return length + stopway - obstacle.getDistance() - blastProtection;
   }
 
   private int calculateTODA() {
     if (!hasObstacle()) return length + clearwayLength;
-    if (obstacle.getDistance() < 0) return round(length - abs(obstacle.getDistance()) - STRIPENDOFFSET - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
+    if (obstacle.getDistance() > length / 2) return round(length - (length - obstacle.getDistance()) - STRIPENDOFFSET - (RESA + obstacle.getHeight())*TOCS.getAngle() - 0.5f);
     return length + clearwayLength - obstacle.getDistance() - blastProtection;
   }
 
   private int calculateLDA() {
     if (!hasObstacle()) return length - displacedThreshold;
-    if (obstacle.getDistance() < 0) return length - abs(obstacle.getDistance()) - displacedThreshold;
+    if (obstacle.getDistance() > length / 2) return length - (length - obstacle.getDistance()) - displacedThreshold;
     return round(length - obstacle.getDistance() - STRIPENDOFFSET - max((RESA + obstacle.getHeight())*ALS.getAngle(), displacedThreshold) - 0.5f);
   }
-  
+
+
 
   private String name;
 
