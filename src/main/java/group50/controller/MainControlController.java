@@ -476,11 +476,13 @@ public class MainControlController  implements Initializable  {
 
                double dx = event.getSceneX() - pivotInScene.getX();
                double dy = event.getSceneY() - pivotInScene.getY();
+               Obstacle obstacle= obstacleComboBox.getValue();
+               if(obstacle!=null){
+                   cursorView.setFitWidth(obstacle.getScale() * newScaleX);
+                   cursorView.setFitHeight((cursorView.getImage().getHeight() / cursorView.getImage().getWidth()) * cursorView.getFitWidth());
 
-               cursorView.setFitWidth(500 * newScaleX);
-               cursorView.setFitHeight((cursorView.getImage().getHeight() / cursorView.getImage().getWidth()) * cursorView.getFitWidth());
 
-
+               }
 
                runwayGroup.setTranslateX(runwayGroup.getTranslateX() + dx);
                runwayGroup.setTranslateY(runwayGroup.getTranslateY() + dy);
@@ -512,9 +514,14 @@ public class MainControlController  implements Initializable  {
                    Point2D newMouseInScene = runwayGroup.localToScene(mouseInGroup);
                    double deltaX = event.getSceneX() - newMouseInScene.getX();
                    double deltaY = event.getSceneY() - newMouseInScene.getY();
-// Scale cursor proportionally (relative to original)
-                   cursorView.setFitWidth(500 * newScaleX);
-                   cursorView.setFitHeight((cursorView.getImage().getHeight() / cursorView.getImage().getWidth()) * cursorView.getFitWidth());
+                   Obstacle obstacle= obstacleComboBox.getValue();
+                   if(obstacle!=null){
+                       cursorView.setFitWidth(obstacle.getScale() * newScaleX);
+                       cursorView.setFitHeight((cursorView.getImage().getHeight() / cursorView.getImage().getWidth()) * cursorView.getFitWidth());
+
+
+                   }
+
 
                    runwayGroup.setTranslateX(runwayGroup.getTranslateX() + deltaX);
                    runwayGroup.setTranslateY(runwayGroup.getTranslateY() + deltaY);
