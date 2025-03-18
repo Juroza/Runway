@@ -350,32 +350,7 @@ public class MainControlController  implements Initializable  {
         });
     }
 
-    public void setScaledCursor(Scene scene, String imagePath, double scale) {
-        // Load the original image
-        Image originalImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/car.png")));
 
-        // Calculate new dimensions
-        int newWidth = (int) (originalImage.getWidth() * scale);
-        int newHeight = (int) (originalImage.getHeight() * scale);
-
-        // Create a writable image with transparency support
-        WritableImage resizedImage = new WritableImage(newWidth, newHeight);
-        PixelReader reader = originalImage.getPixelReader();
-        PixelWriter writer = resizedImage.getPixelWriter();
-
-        // Copy pixels manually (preserving alpha transparency)
-        for (int y = 0; y < newHeight; y++) {
-            for (int x = 0; x < newWidth; x++) {
-                // Read from original image (scaled position)
-                int argb = reader.getArgb((int) (x / scale), (int) (y / scale));
-                writer.setArgb(x, y, argb);
-            }
-        }
-
-        // Apply the resized transparent image as the cursor
-        ImageCursor customCursor = new ImageCursor(resizedImage, newWidth / 2, newHeight / 2);
-        scene.setCursor(customCursor);
-    }
 
     private void initializeCursor() {
         if(viewContainer.getScene()==null) return;
