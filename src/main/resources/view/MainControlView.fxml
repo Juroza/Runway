@@ -85,9 +85,8 @@
         <Menu mnemonicParsing="false" text="View">
           <items>
             <MenuItem mnemonicParsing="false" text="Zoom in" />
-                  <MenuItem mnemonicParsing="false" text="Zoom out" />
-                  <MenuItem mnemonicParsing="false" text="Reset View" />
-                  <RadioMenuItem mnemonicParsing="false" text="Show Details" />
+            <MenuItem mnemonicParsing="false" text="Zoom out" />
+            <RadioMenuItem mnemonicParsing="false" text="Show Details" />
           </items>
         </Menu>
             <Menu mnemonicParsing="false" text="Tools">
@@ -163,6 +162,13 @@
                                            mnemonicParsing="false" onAction="#handleAddObstacle"
                                            style="-fx-background-color: #FFD700; -fx-text-fill: black;
                                                    -fx-font-size: 14px; -fx-pref-width: 170px; -fx-pref-height: 40px; -fx-border-radius: 5px;"/>
+                               </HBox>
+
+                               <HBox spacing="10" alignment="CENTER_LEFT">
+                                 <Button text="Reset View" fx:id="resetViewButton"
+                                   mnemonicParsing="false" onAction="#handleResetView"
+                                   style="-fx-background-color: #FFAA00; -fx-text-fill: black; -fx-font-size: 14px; -fx-pref-width: 140px; -fx-pref-height: 40px; -fx-border-radius: 5px;"/>
+
                                </HBox>
 
                                <Label text="Manual Runway Parameters Input" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>

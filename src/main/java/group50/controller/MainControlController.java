@@ -94,8 +94,6 @@ public class MainControlController  implements Initializable  {
     private double mouseAnchorY;
     private double initialTranslateX;
     private double initialTranslateY;
-    private double initialTranslateXStore;
-    private double initialTranslateYStore;
     private double initialScaleX;
     private double initialScaleY;
     private boolean switchingViews=false;
@@ -168,17 +166,11 @@ public class MainControlController  implements Initializable  {
         });
     }
 
-    public void storeInitialCameraPosition() {
-        initialTranslateXStore = runwayGroup.getTranslateX();
-        initialTranslateYStore = runwayGroup.getTranslateY();
-        initialScaleX = runwayGroup.getScaleX();
-        initialScaleY = runwayGroup.getScaleY();
-    }
     public void resetCameraPosition() {
-        runwayGroup.setTranslateX(initialTranslateXStore);
-        runwayGroup.setTranslateY(initialTranslateYStore);
-        runwayGroup.setScaleX(initialScaleX);
-        runwayGroup.setScaleY(initialScaleY);
+        runwayGroup.setScaleX(0.1d);
+        runwayGroup.setScaleY(0.1d);
+        runwayGroup.setTranslateX(Math.max(viewContainer.getWidth(), 800) / 2);
+        runwayGroup.setTranslateY(Math.max(viewContainer.getHeight(), 800) / 2);
     }
 
 
@@ -189,23 +181,24 @@ public class MainControlController  implements Initializable  {
     @FXML
     public void handleViewTypeSelection() {
         String type = viewTypeSelector.getSelectionModel().getSelectedItem();
-        resetCameraAndZoom();
         resetCameraPosition();
         if (type.equals("Top Down")) {
-            resetCameraPosition();
             loadTopDownView();
             resetControlPanel();
         } else if (type.equals("Side on")) {
-            resetCameraPosition();
             loadSideOnView();
             resetControlPanel();
         }
     }
 
+    @FXML
+    public void handleResetView() {
+        resetCameraPosition();
+    }
+
 
     public void updateView() {
         String type = viewTypeSelector.getSelectionModel().getSelectedItem();
-        resetCameraAndZoom();
         resetCameraPosition();
         if (type.equals("Top Down")) {
             loadTopDownView();
@@ -384,8 +377,6 @@ public class MainControlController  implements Initializable  {
 
            obstacleComboBox.getItems().addAll(ObstacleManager.getObstacles());
 
-
-
        }catch (RuntimeException e){
            throw new RuntimeException();
        }
@@ -414,42 +405,17 @@ public class MainControlController  implements Initializable  {
 
 
         runwayGroup.setRotate(0);
-        runwayGroup.setScaleX(1);
-        runwayGroup.setScaleY(1);
 
-
-        Ellipse grassArea = (Ellipse) objs.get(0);
-
-
-        double windowWidth = Math.max(viewContainer.getWidth(), 800);
-        double windowHeight = Math.max(viewContainer.getHeight(), 600);
-
-        Point2D runwayScenePos = grassArea.localToScene(grassArea.getCenterX(), grassArea.getCenterY());
-
-
-        double offsetX = (windowWidth / 2) - runwayScenePos.getX();
-        double offsetY = (windowHeight / 2) - runwayScenePos.getY();
-
-
-        runwayGroup.setTranslateX(offsetX);
-        runwayGroup.setTranslateY(offsetY);
+        resetCameraPosition();
 
         String degree=selectedRunway.getName().substring(0,2);
         System.out.println(degree);
         int val=Integer.parseInt(degree)*10;        System.out.println(val);
         runwayGroup.setRotate(val);
         arrowImage.setRotate(val);
-        // Store the camera position after centering
-        storeInitialCameraPosition();
     }
 
 
-    public void resetCameraAndZoom() {
-        runwayGroup.setTranslateX(0);
-        runwayGroup.setTranslateY(0);
-        runwayGroup.setScaleX(1);
-        runwayGroup.setScaleY(1);
-    }
     private void loadSideOnView() {
         // Disable overlays not relevant to side view
         showToraToggle.setDisable(true);
@@ -474,13 +440,12 @@ public class MainControlController  implements Initializable  {
 
 
         runwayGroup.setRotate(0);
-        runwayGroup.setScaleX(1);
-        runwayGroup.setScaleY(1);
+
+        resetCameraPosition();
 
         // Get scene dimensions
         double windowWidth = viewContainer.getWidth();
         double windowHeight = viewContainer.getHeight();
-
 
         Rectangle runwayRect = (Rectangle) runwayGroup.lookup("#runway");
 
@@ -492,7 +457,6 @@ public class MainControlController  implements Initializable  {
             double offsetX = (windowWidth / 2) - runwayScenePos.getX();
             double offsetY = (windowHeight / 2) - runwayScenePos.getY();
 
-            // **Apply translation**
             runwayGroup.setTranslateX(offsetX);
             runwayGroup.setTranslateY(offsetY);
 
@@ -500,7 +464,6 @@ public class MainControlController  implements Initializable  {
 
         arrowImage.setRotate(0);
 
-        storeInitialCameraPosition();
     }
 
 

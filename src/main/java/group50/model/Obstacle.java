@@ -11,7 +11,7 @@ public class Obstacle {
   private String name;
   private int height;
   //positive distances are from the start of the runway.
-  // negative distances are from the end of the runway.
+  //negative distances are from the end of the runway.
   private int distance;
 
 
