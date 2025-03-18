@@ -89,6 +89,7 @@ public class LoginController {
         }catch (RuntimeException e){
 
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

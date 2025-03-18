@@ -154,12 +154,13 @@
                                     <RadioButton fx:id="showALSToggle" mnemonicParsing="false" onAction="#handleALSOverlayShow" styleClass="wii-radio-button" text="ALS" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                  </children>
                               </GridPane>
-                              <Label text="Obstacle" styleClass="section-title"  />
+                              <Label styleClass="section-title" text="Obstacle" />
 
                                <HBox alignment="CENTER_LEFT" spacing="10">
                                    <ComboBox fx:id="obstacleComboBox" promptText="Choose an Obstacle" style="-fx-pref-width: 250px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
                                    <Button fx:id="addObstacleButton" mnemonicParsing="false" onAction="#handleAddObstacle" styleClass="wii-button" text="Add Obstacle" />
                                </HBox>
+                              <Button mnemonicParsing="false" text="Add Obstacle Type" onAction="#handleAddObstacleType"  styleClass="wii-button" />
 
                                <HBox alignment="CENTER_LEFT" spacing="10">
                                  <Button fx:id="resetViewButton" mnemonicParsing="false" onAction="#handleResetView" styleClass="wii-button" text="Reset View" />

@@ -8,10 +8,10 @@ public class ObstacleManager {
     private static int obstacleCounter = 0;
 
     static {
-        obstacleList.add(new Obstacle("Tree", 1,  50));
-        obstacleList.add(new Obstacle("Car", 2,  100));
-        obstacleList.add(new Obstacle("Building", 12, 200));
-        obstacleList.add(new Obstacle("Plane", 8, 150));
+        obstacleList.add(new Obstacle("Tree", 1,  50, "/images/tree.png", 600));
+        obstacleList.add(new Obstacle("Car", 2,  100, "/images/car.png", 500));
+        obstacleList.add(new Obstacle("????", 12, 200, "/images/ufo.png", 1000));
+        obstacleList.add(new Obstacle("Plane", 8, 150, "/images/plane.png", 1500));
     }
 
 

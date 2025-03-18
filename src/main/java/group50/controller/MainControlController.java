@@ -1,10 +1,10 @@
 package group50.controller;
 
+
 import group50.graphics.RunwayRenderer;
 import group50.model.Obstacle;
 import group50.model.Runway;
-import group50.network.Firebase;
-import group50.utils.CAAParametersLoader;
+
 import java.io.File;
 
 import group50.utils.DatabaseManager;
@@ -16,19 +16,13 @@ import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseButton;
+import javafx.scene.image.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.Group;
 import javafx.fxml.Initializable;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -38,6 +32,8 @@ import java.net.URL;
 import java.util.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.checkerframework.checker.units.qual.C;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -52,6 +48,55 @@ public class MainControlController  implements Initializable  {
     @FXML private RadioButton showClearwayToggle;
     @FXML
     private ImageView arrowImage;
+    private List<StoredObstacle> storedObstacles = new ArrayList<>();
+
+    private static class StoredObstacle {
+        double localX, localY;
+        String imagePath;
+        double scale;
+
+        public StoredObstacle(double x, double y, String path, double scale) {
+            this.localX = x;
+            this.localY = y;
+            this.imagePath = path;
+            this.scale = scale;
+        }
+    }
+    private void storeObstacles() {
+        storedObstacles.clear();
+        for (Node node : runwayGroup.getChildren()) {
+            if (node instanceof ImageView) {
+                ImageView obstacle = (ImageView) node;
+                String imagePath = (String) obstacle.getUserData(); // Ensure path is stored
+                if (imagePath != null) {
+                    Point2D localPos = new Point2D(obstacle.getX(), obstacle.getY());
+                    storedObstacles.add(new StoredObstacle(localPos.getX(), localPos.getY(), imagePath, obstacle.getFitWidth()));
+                }
+            }
+        }
+    }
+    private void restoreObstacles() {
+        for (StoredObstacle obstacleData : storedObstacles) {
+            addObstacleAt(obstacleData.localX, obstacleData.localY, obstacleData.imagePath, obstacleData.scale);
+        }
+    }
+    private void addObstacleAt(double x, double y, String path, double scale) {
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(scale);
+        imageView.setFitHeight((image.getHeight() / image.getWidth()) * scale);
+        imageView.setX(x);
+        imageView.setY(y);
+        imageView.setUserData(path);
+        imageView.setRotate(-90);
+
+        runwayGroup.getChildren().add(imageView);
+        stopPlacing();
+        resetCursorToDefault();
+
+    }
+
     private static final double MIN_SCALE = 0.0000001;
     private static final double MAX_SCALE = 50000.0;
 
@@ -130,10 +175,12 @@ public class MainControlController  implements Initializable  {
 
     @FXML
     public void handleAsdaOverlayShow() {
+        resetCursorToDefault();
         handleOverlayToggle("asda", showAsdaToggle);
     }
     @FXML
     public void handleALSOverlayShow(){
+        initializeCursor();
         handleOverlayToggle("als",showALSToggle);
     }
 
@@ -188,12 +235,47 @@ public class MainControlController  implements Initializable  {
             resetControlPanel();
         }
         resetCameraPosition();
+        restoreObstacles();
     }
 
     @FXML
     public void handleResetView() {
         resetCameraPosition();
+
     }
+    private void addImageAtClick(double sceneX, double sceneY,String path,double scale) {
+
+        Point2D localPoint = runwayGroup.sceneToLocal(sceneX, sceneY);
+
+
+        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
+
+
+        double originalWidth = image.getWidth();
+        double originalHeight = image.getHeight();
+
+
+        double scaleFactor = scale / originalWidth;
+
+
+        ImageView imageView = new ImageView(image);
+        imageView.setFitWidth(scale);
+        imageView.setFitHeight(originalHeight * scaleFactor);
+
+        double offsetX = imageView.getFitWidth() / 2;
+        double offsetY = imageView.getFitHeight() / 2;
+
+
+        imageView.setX(localPoint.getX() - offsetX);
+        imageView.setY(localPoint.getY() - offsetY);
+        imageView.setUserData(path);
+
+
+        runwayGroup.getChildren().add(imageView);
+    }
+
+
+
 
 
     public void updateView() {
@@ -263,9 +345,94 @@ public class MainControlController  implements Initializable  {
         handleClearwayOverlayShow();
         handleALSOverlayShow();
     }
+    private void stopPlacing(){
+        runwayGroup.setOnMouseClicked(mouseEvent -> {;
+        });
+    }
+
+    public void setScaledCursor(Scene scene, String imagePath, double scale) {
+        // Load the original image
+        Image originalImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/car.png")));
+
+        // Calculate new dimensions
+        int newWidth = (int) (originalImage.getWidth() * scale);
+        int newHeight = (int) (originalImage.getHeight() * scale);
+
+        // Create a writable image with transparency support
+        WritableImage resizedImage = new WritableImage(newWidth, newHeight);
+        PixelReader reader = originalImage.getPixelReader();
+        PixelWriter writer = resizedImage.getPixelWriter();
+
+        // Copy pixels manually (preserving alpha transparency)
+        for (int y = 0; y < newHeight; y++) {
+            for (int x = 0; x < newWidth; x++) {
+                // Read from original image (scaled position)
+                int argb = reader.getArgb((int) (x / scale), (int) (y / scale));
+                writer.setArgb(x, y, argb);
+            }
+        }
+
+        // Apply the resized transparent image as the cursor
+        ImageCursor customCursor = new ImageCursor(resizedImage, newWidth / 2, newHeight / 2);
+        scene.setCursor(customCursor);
+    }
+
+    private void initializeCursor() {
+        if(viewContainer.getScene()==null) return;
+        Obstacle obstacle=obstacleComboBox.getValue();
+
+        Image cursorImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(obstacle.getPath())));
 
 
+        double originalWidth = cursorImage.getWidth();
+        double originalHeight = cursorImage.getHeight();
 
+
+        double baseWidth = obstacle.getScale();
+        double scaleFactor = baseWidth / originalWidth;
+
+
+        cursorView = new ImageView(cursorImage);
+
+
+        cursorView.setFitWidth(baseWidth);
+        cursorView.setFitHeight(originalHeight * scaleFactor);
+
+        cursorView.setMouseTransparent(true);
+
+
+        viewContainer.getChildren().add(cursorView);
+
+
+        test(obstacle.getScale());
+
+
+        viewContainer.setOnMouseMoved(event -> {
+            cursorView.setX(event.getX() - cursorView.getFitWidth() / 2);
+            cursorView.setY(event.getY() - cursorView.getFitHeight() / 2);
+        });
+        runwayGroup.setOnMouseClicked(mouseEvent -> {
+            addImageAtClick(mouseEvent.getSceneX(), mouseEvent.getSceneY(), obstacle.getPath(),baseWidth);
+
+            storeObstacles();
+            resetCursorToDefault();
+            double distance=getObstacleDistanceFromStopway();
+            Runway run=runwaySelector.getValue();
+            obstacle.setDistance((int) distance);
+            run.setObstacle(obstacle);
+            stopPlacing();
+            handleViewTypeSelection();
+
+        });
+    }
+    private ImageView cursorView;
+    public void resetCursorToDefault() {
+        if (viewContainer != null) {
+            viewContainer.getChildren().remove(cursorView);
+            viewContainer.setCursor(Cursor.DEFAULT);
+            runwayGroup.setCursor(Cursor.DEFAULT);
+        }
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -281,7 +448,6 @@ public class MainControlController  implements Initializable  {
 
 
 
-
            arrowImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/arrow.png"))));
            arrowImage.setScaleX(2);
            allowOnlyDigits(lengthInput);
@@ -293,13 +459,12 @@ public class MainControlController  implements Initializable  {
            viewContainer.getChildren().add(runwayGroup);
            handleViewTypeSelection();
            overlayRunThrough();
-           Platform.runLater(this::centerRunwayAtDefaultScale);
+           Platform.runLater(this::resetCameraPosition);
 
            runwaySelector.setItems(FXCollections.observableArrayList(runwayList));
            if (!runwayList.isEmpty()) {
                runwaySelector.getSelectionModel().select(0);
            }
-
 
 
            viewContainer.setOnMousePressed(event -> {
@@ -337,6 +502,11 @@ public class MainControlController  implements Initializable  {
                double dx = event.getSceneX() - pivotInScene.getX();
                double dy = event.getSceneY() - pivotInScene.getY();
 
+               cursorView.setFitWidth(500 * newScaleX);
+               cursorView.setFitHeight((cursorView.getImage().getHeight() / cursorView.getImage().getWidth()) * cursorView.getFitWidth());
+
+
+
                runwayGroup.setTranslateX(runwayGroup.getTranslateX() + dx);
                runwayGroup.setTranslateY(runwayGroup.getTranslateY() + dy);
 
@@ -367,6 +537,9 @@ public class MainControlController  implements Initializable  {
                    Point2D newMouseInScene = runwayGroup.localToScene(mouseInGroup);
                    double deltaX = event.getSceneX() - newMouseInScene.getX();
                    double deltaY = event.getSceneY() - newMouseInScene.getY();
+// Scale cursor proportionally (relative to original)
+                   cursorView.setFitWidth(500 * newScaleX);
+                   cursorView.setFitHeight((cursorView.getImage().getHeight() / cursorView.getImage().getWidth()) * cursorView.getFitWidth());
 
                    runwayGroup.setTranslateX(runwayGroup.getTranslateX() + deltaX);
                    runwayGroup.setTranslateY(runwayGroup.getTranslateY() + deltaY);
@@ -375,7 +548,13 @@ public class MainControlController  implements Initializable  {
                } else { // Normal scrolling (panning)
                    runwayGroup.setTranslateX(runwayGroup.getTranslateX() + event.getDeltaX());
                    runwayGroup.setTranslateY(runwayGroup.getTranslateY() + event.getDeltaY());
+                   // Scale cursor proportionally (relative to original)
 
+                   runwayGroup.setTranslateX(runwayGroup.getTranslateX() + event.getDeltaX());
+                   runwayGroup.setTranslateY(runwayGroup.getTranslateY() + event.getDeltaY());
+
+                   runwayGroup.setTranslateX(runwayGroup.getTranslateX() + event.getDeltaX());
+                   runwayGroup.setTranslateY(runwayGroup.getTranslateY() + event.getDeltaY());
                }
                event.consume();
            });
@@ -388,6 +567,13 @@ public class MainControlController  implements Initializable  {
 
 
     }
+    private void test(double scale){
+        double newScaleX = runwayGroup.getScaleX();
+        cursorView.setFitWidth(scale * newScaleX);
+        cursorView.setFitHeight((cursorView.getImage().getHeight() / cursorView.getImage().getWidth()) * cursorView.getFitWidth());
+
+    }
+
 
 
     private void loadTopDownView() {
@@ -399,10 +585,8 @@ public class MainControlController  implements Initializable  {
         showALSToggle.setDisable(true);
         showResaToggle.setDisable(true);
 
-        // Clear previous elements, keep event listeners intact
         runwayGroup.getChildren().clear();
         runwayGroupStore.getChildren().clear();
-
         Runway selectedRunway = runwaySelector.getValue();
         objs = RunwayRenderer.generateTopDownRunway(selectedRunway);
         runwayGroup.getChildren().addAll(objs);
@@ -688,6 +872,66 @@ public class MainControlController  implements Initializable  {
         return (nodeList.getLength() > 0) ? nodeList.item(0).getTextContent() : "Unknown";
     }
 
+    private ImageView getLastPlacedObstacle() {
+        List<Node> children = runwayGroup.getChildren();
+        for (int i = children.size() - 1; i >= 0; i--) { // Iterate from the last added element
+            if (children.get(i) instanceof ImageView) {
+                return (ImageView) children.get(i);
+            }
+        }
+        return null; // No obstacle found
+    }
+
+    private static final double STOPWAY_SCALE_FACTOR = 10.0;
+
+    public double  getObstacleDistanceFromStopway() {
+
+        Rectangle stopwayRect = (Rectangle) runwayGroup.lookup("#stopway");
+        if (stopwayRect == null) {
+            System.out.println("Stopway rectangle not found!");
+            return -1;
+        }
+
+
+        ImageView lastObstacle = getLastPlacedObstacle();
+        if (lastObstacle == null) {
+            System.out.println("No obstacles found!");
+            return -1;
+        }
+
+
+        Bounds stopwayBounds = stopwayRect.getBoundsInParent();
+        Bounds obstacleBounds = lastObstacle.getBoundsInParent();
+
+
+        double stopwayStartX = stopwayBounds.getMinX();
+        double stopwayStartY = stopwayBounds.getMinY();
+
+
+        double obstacleCenterX = (obstacleBounds.getMinX() + obstacleBounds.getMaxX()) / 2;
+        double obstacleCenterY = (obstacleBounds.getMinY() + obstacleBounds.getMaxY()) / 2;
+
+
+        double stopwayAngle = stopwayRect.getRotate();
+
+
+        double dx = obstacleCenterX - stopwayStartX;
+        double dy = obstacleCenterY - stopwayStartY;
+
+
+        double projectedDistance = dx * Math.cos(Math.toRadians(stopwayAngle)) +
+                dy * Math.sin(Math.toRadians(stopwayAngle));
+
+
+        double realDistance = projectedDistance / STOPWAY_SCALE_FACTOR;
+
+        System.out.println("Rendered Distance: " + projectedDistance + "px");
+        System.out.println("Real Distance: " + realDistance + " actual units");
+
+        return realDistance;
+    }
+
+
     // Helper method to safely parse integers from XML
     private int getIntContent(Element element, String tag) {
         try {
@@ -710,9 +954,8 @@ public class MainControlController  implements Initializable  {
             System.err.println("runwaySelector is null. Check if FXML is properly linked.");
         }
     }
-
     @FXML
-    private void handleAddObstacle() {
+    private void handleAddObstacleType(){
         Dialog<Obstacle> dialog = new Dialog<>();
         dialog.setTitle("Add New Obstacle");
         dialog.setHeaderText("Enter details for the new obstacle:");
@@ -755,7 +998,7 @@ public class MainControlController  implements Initializable  {
                         showError("Invalid Input", "Please enter valid obstacle details.");
                         return null;
                     }
-                    return new Obstacle(name, height, distance);
+                    return new Obstacle(name, height, distance, "/images/car.png", 500);
 
                 } catch (NumberFormatException e) {
                     showError("Invalid Input", "Please enter valid numbers for Height and Distance.");
@@ -767,6 +1010,15 @@ public class MainControlController  implements Initializable  {
 
         Optional<Obstacle> result = dialog.showAndWait();
         result.ifPresent(this::addObstacleToList);
+    }
+
+
+    @FXML
+    private void handleAddObstacle() {
+        stopPlacing();
+        resetCursorToDefault();
+        initializeCursor();
+
     }
     private void showError(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);

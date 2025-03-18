@@ -109,7 +109,9 @@ public class RunwayRenderer {
         return objects;
 
     }
+
     public static List<Node> generateSideOnRunway(Runway runwayInput){
+        runwayInput.getDisplacedThreshold();
         List<Node> objects = new ArrayList<>();
         Image runwayImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/tarmac.jpg")));
         ImagePattern runwayPattern = new ImagePattern(
