@@ -46,24 +46,24 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.TextField?>
 
-<?import javafx.scene.layout.HBox?>
 <VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="group50.controller.MainControlController">
   <children>
     <MenuBar fx:id="controlMenu" useSystemMenuBar="true" VBox.vgrow="NEVER">
       <menus>
-        <Menu  mnemonicParsing="false" text="File">
+        <Menu mnemonicParsing="false" text="File">
           <items>
             <MenuItem mnemonicParsing="false" text="Open…" />
-                  <MenuItem mnemonicParsing="false" text="Import" onAction="#handleImportFile"/>
+                  <MenuItem mnemonicParsing="false" onAction="#handleImportFile" text="Import" />
                   <MenuItem mnemonicParsing="false" text="Export" />
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Save" />
@@ -154,24 +154,19 @@
                                     <RadioButton fx:id="showALSToggle" mnemonicParsing="false" onAction="#handleALSOverlayShow" styleClass="wii-radio-button" text="ALS" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                  </children>
                               </GridPane>
+                              <Label text="Obstacle" styleClass="section-title"  />
 
-                               <HBox spacing="10" alignment="CENTER_LEFT">
-                                   <ComboBox fx:id="obstacleComboBox" promptText="Choose an Obstacle"
-                                             style="-fx-pref-width: 250px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
-                                   <Button text="Add Obstacle" fx:id="addObstacleButton"
-                                           mnemonicParsing="false" onAction="#handleAddObstacle"
-                                           style="-fx-background-color: #FFD700; -fx-text-fill: black;
-                                                   -fx-font-size: 14px; -fx-pref-width: 170px; -fx-pref-height: 40px; -fx-border-radius: 5px;"/>
+                               <HBox alignment="CENTER_LEFT" spacing="10">
+                                   <ComboBox fx:id="obstacleComboBox" promptText="Choose an Obstacle" style="-fx-pref-width: 250px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
+                                   <Button fx:id="addObstacleButton" mnemonicParsing="false" onAction="#handleAddObstacle" styleClass="wii-button" text="Add Obstacle" />
                                </HBox>
 
-                               <HBox spacing="10" alignment="CENTER_LEFT">
-                                 <Button text="Reset View" fx:id="resetViewButton"
-                                   mnemonicParsing="false" onAction="#handleResetView"
-                                   style="-fx-background-color: #FFAA00; -fx-text-fill: black; -fx-font-size: 14px; -fx-pref-width: 140px; -fx-pref-height: 40px; -fx-border-radius: 5px;"/>
+                               <HBox alignment="CENTER_LEFT" spacing="10">
+                                 <Button fx:id="resetViewButton" mnemonicParsing="false" onAction="#handleResetView" styleClass="wii-button" text="Reset View" />
 
                                </HBox>
 
-                               <Label text="Manual Runway Parameters Input" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                               <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Manual Runway Parameters Input" />
                                <Label text="Length (m)" />
                                <TextField fx:id="lengthInput" promptText="Enter Runway Length" />
                                <Label text="Clearway Length (m)" />
@@ -180,14 +175,12 @@
                                <TextField fx:id="stopwayInput" promptText="Enter Stopway Length" />
                                <Label text="Displaced Threshold (m)" />
                                <TextField fx:id="displacedThresholdInput" promptText="Enter Displaced Threshold" />
-                               <Button text="Apply Parameters" onAction="#handleApplyParameters" prefWidth="150" />
-                               <HBox spacing="20" alignment="CENTER_LEFT">
-                                   <Label fx:id="welcomeLabel" text="Welcome, XXX"/>
-                                   <Label fx:id="airportLabel" text="Welcome to XXX Airport"/>
+                               <Button onAction="#handleApplyParameters" prefWidth="150" text="Apply Parameters" />
+                               <HBox alignment="CENTER_LEFT" spacing="20">
+                                   <Label fx:id="welcomeLabel" text="Welcome, XXX" />
+                                   <Label fx:id="airportLabel" text="Welcome to XXX Airport" />
                                </HBox>
-                               <Button text="Back" fx:id="backToLoginButton" onAction="#handleBackToLogin"
-                                       style="-fx-background-color: #D32F2F; -fx-text-fill: white; -fx-font-size: 11px;
-                                        -fx-border-radius: 8px; -fx-padding: 5px 10px; -fx-min-width: 70px; -fx-min-height: 25px;"/>
+                               <Button fx:id="backToLoginButton" onAction="#handleBackToLogin" style="-fx-background-color: #D32F2F; -fx-text-fill: white; -fx-font-size: 11px;                                         -fx-border-radius: 8px; -fx-padding: 5px 10px; -fx-min-width: 70px; -fx-min-height: 25px;" text="Back" />
                            </children>
                         </VBox>
                      </content>

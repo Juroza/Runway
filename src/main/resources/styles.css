@@ -137,32 +137,33 @@
     -fx-cursor: default;
 }
 
-.xbox-radio-button {
-    -fx-padding: 8 20;
-    -fx-background-color: linear-gradient(to bottom, #e6e6e6, #cccccc);
-    -fx-border-color: #888888;
-    -fx-border-width: 1.8;
-    -fx-border-radius: 30;
-    -fx-background-radius: 30;
+.wii-button {
+    -fx-padding: 10 20;
+    -fx-background-color: linear-gradient(to bottom, #ffffff, #e0e0e0);
+    -fx-border-color: #b0b0b0;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
     -fx-font-family: "Segoe UI", "Roboto", "Arial", sans-serif;
-    -fx-font-size: 15px;
+    -fx-font-size: 16px;
     -fx-text-fill: #333333;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 2, 0, 0, 1);
     -fx-cursor: hand;
-    -fx-alignment: center;
+    -fx-alignment: CENTER;
+    -fx-transition: all 0.3s ease-in-out;
 }
 
-.xbox-radio-button:hover {
-    -fx-background-color: linear-gradient(to bottom, #d9ffd9, #b3ffb3);
-    -fx-border-color: #66cc66;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 2);
+/* Hover Effect */
+.wii-button:hover {
+    -fx-background-color: linear-gradient(to bottom, #f8f8f8, #d8d8d8);
+    -fx-border-color: #a0a0a0;
 }
 
-.xbox-radio-button:selected {
-    -fx-background-color: linear-gradient(to bottom, #76c043, #5ca82d);
-    -fx-border-color: #4a8f1f;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 5, 0, 0, 3);
+/* Pressed Effect */
+.wii-button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #d0d0d0, #b8b8b8);
+    -fx-border-color: #909090;
+    -fx-translate-y: 2px; /* Gives a pressed button effect */
 }
 
 
@@ -170,13 +171,7 @@
     -fx-background-color: #F5F5F5;
 }
 
-.button {
-    -fx-background-color: #FFD700;
-    -fx-text-fill: black;
-    -fx-font-size: 14px;
-    -fx-border-radius: 20px;
-    -fx-padding: 10px;
-}
+
 
 .text-field, .password-field, .combo-box {
     -fx-font-size: 14px;

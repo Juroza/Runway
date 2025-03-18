@@ -48,6 +48,7 @@ public class LoginController {
         if (selectedAirport == null || selectedAirport.equals("Select an airport...")) {
             errorLabel.setText("Please choose an airport!");
             errorLabel.setTextFill(Color.RED);
+            loginButton.setDisable(false);
             return;
         }
 
@@ -58,6 +59,7 @@ public class LoginController {
 
             errorLabel.setText("Incorrect user name or password！");
             errorLabel.setTextFill(Color.RED);
+            loginButton.setDisable(false);
         }
         loginButton.setDisable(false);
     }

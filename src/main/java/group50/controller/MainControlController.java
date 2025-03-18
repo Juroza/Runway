@@ -9,9 +9,11 @@ import java.io.File;
 
 import group50.utils.DatabaseManager;
 import group50.utils.ObstacleManager;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
@@ -167,10 +169,7 @@ public class MainControlController  implements Initializable  {
     }
 
     public void resetCameraPosition() {
-        runwayGroup.setScaleX(0.1d);
-        runwayGroup.setScaleY(0.1d);
-        runwayGroup.setTranslateX(Math.max(viewContainer.getWidth(), 800) / 2);
-        runwayGroup.setTranslateY(Math.max(viewContainer.getHeight(), 800) / 2);
+        centerRunwayAtDefaultScale();
     }
 
 
@@ -181,7 +180,6 @@ public class MainControlController  implements Initializable  {
     @FXML
     public void handleViewTypeSelection() {
         String type = viewTypeSelector.getSelectionModel().getSelectedItem();
-        resetCameraPosition();
         if (type.equals("Top Down")) {
             loadTopDownView();
             resetControlPanel();
@@ -189,6 +187,7 @@ public class MainControlController  implements Initializable  {
             loadSideOnView();
             resetControlPanel();
         }
+        resetCameraPosition();
     }
 
     @FXML
@@ -292,9 +291,9 @@ public class MainControlController  implements Initializable  {
            viewTypeSelector.getSelectionModel().select(0);
 
            viewContainer.getChildren().add(runwayGroup);
-
-           loadTopDownView();
+           handleViewTypeSelection();
            overlayRunThrough();
+           Platform.runLater(this::centerRunwayAtDefaultScale);
 
            runwaySelector.setItems(FXCollections.observableArrayList(runwayList));
            if (!runwayList.isEmpty()) {
@@ -315,6 +314,8 @@ public class MainControlController  implements Initializable  {
                double deltaY = event.getSceneY() - mouseAnchorY;
                runwayGroup.setTranslateX(initialTranslateX + deltaX);
                runwayGroup.setTranslateY(initialTranslateY + deltaY);
+
+
            });
            runwayGroup.setOnZoom(event -> {
                double zoomFactor = event.getZoomFactor();
@@ -338,6 +339,8 @@ public class MainControlController  implements Initializable  {
 
                runwayGroup.setTranslateX(runwayGroup.getTranslateX() + dx);
                runwayGroup.setTranslateY(runwayGroup.getTranslateY() + dy);
+
+
 
                event.consume();
            });
@@ -368,9 +371,11 @@ public class MainControlController  implements Initializable  {
                    runwayGroup.setTranslateX(runwayGroup.getTranslateX() + deltaX);
                    runwayGroup.setTranslateY(runwayGroup.getTranslateY() + deltaY);
 
+
                } else { // Normal scrolling (panning)
                    runwayGroup.setTranslateX(runwayGroup.getTranslateX() + event.getDeltaX());
                    runwayGroup.setTranslateY(runwayGroup.getTranslateY() + event.getDeltaY());
+
                }
                event.consume();
            });
@@ -415,6 +420,32 @@ public class MainControlController  implements Initializable  {
         arrowImage.setRotate(val);
     }
 
+    private void centerRunwayAtDefaultScale() {
+        double defaultScale = 0.01;
+
+
+        runwayGroup.setScaleX(defaultScale);
+        runwayGroup.setScaleY(defaultScale);
+
+
+        double viewCenterX = viewContainer.getWidth() / 2;
+        double viewCenterY = viewContainer.getHeight() / 2;
+
+
+        Bounds bounds = runwayGroup.localToScene(runwayGroup.getBoundsInLocal());
+        double runwayCenterX = (bounds.getMinX() + bounds.getMaxX()) / 2;
+        double runwayCenterY = (bounds.getMinY() + bounds.getMaxY()) / 2;
+
+
+        double offsetX = viewCenterX - runwayCenterX;
+        double offsetY = viewCenterY - runwayCenterY;
+
+
+        runwayGroup.setTranslateX(runwayGroup.getTranslateX() + offsetX);
+        runwayGroup.setTranslateY(runwayGroup.getTranslateY() + offsetY);
+
+
+    }
 
     private void loadSideOnView() {
         // Disable overlays not relevant to side view
@@ -455,7 +486,7 @@ public class MainControlController  implements Initializable  {
 
 
             double offsetX = (windowWidth / 2) - runwayScenePos.getX();
-            double offsetY = (windowHeight / 2) - runwayScenePos.getY();
+            double offsetY = (windowHeight/1.5) - runwayScenePos.getY();
 
             runwayGroup.setTranslateX(offsetX);
             runwayGroup.setTranslateY(offsetY);
