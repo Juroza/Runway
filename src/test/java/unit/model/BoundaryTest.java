@@ -40,4 +40,41 @@ public class BoundaryTest {
         assertEquals(0, runway.getLDA());
     }
 
+    @Test
+    @DisplayName("TODA should be greater than or equal to TORA")
+    void testTODA() {
+        Runway runway = new Runway("09L", 3000, 3200, 200, 400, 500, 300, 240);
+        assertTrue(runway.getTODA() >= runway.getTORA(), "TODA must be at least TORA");
+    }
+
+    @Test
+    @DisplayName("ASDA should be greater than or equal to TORA")
+    void testASDA() {
+        Runway runway = new Runway("09L", 3000, 3200, 200, 400, 500, 300, 240);
+        assertTrue(runway.getASDA() >= runway.getTORA(), "ASDA must be at least TORA");
+    }
+
+    @Test
+    @DisplayName("LDA should be less than or equal to TORA")
+    void testLDA() {
+        Runway runway = new Runway("09L", 3000, 3200, 200, 400, 500, 300, 240);
+        assertTrue(runway.getLDA() <= runway.getTORA(), "LDA must not exceed TORA");
+    }
+
+    @Test
+    @DisplayName("LDA should be correctly calculated")
+    void testLDACalculation() {
+        Runway runway = new Runway("09L", 3000, 3200, 200, 400, 500, 300, 240);
+        assertEquals(runway.getTORA() - runway.getDisplacedThreshold(), runway.getLDA(),
+                "LDA should be TORA - Displaced Threshold");
+    }
+
+    @Test
+    @DisplayName("TORA should be greater than stopway and clearway")
+    void testTORAValidity() {
+        Runway runway = new Runway("09L", 3000, 3200, 500, 2000, 500, 300, 240);
+        assertTrue(runway.getTORA() >= runway.getStopway(), "TORA must be greater than Stopway");
+        assertTrue(runway.getTORA() >= runway.getClearwayLength(), "TORA must be greater than Clearway");
+    }
+
 }
