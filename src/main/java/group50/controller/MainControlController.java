@@ -228,14 +228,20 @@ public class MainControlController  implements Initializable  {
     public void handleViewTypeSelection() {
         String type = viewTypeSelector.getSelectionModel().getSelectedItem();
         if (type.equals("Top Down")) {
+
             loadTopDownView();
             resetControlPanel();
         } else if (type.equals("Side on")) {
+            storedObstacles.clear();
             loadSideOnView();
             resetControlPanel();
         }
         resetCameraPosition();
-        restoreObstacles();
+        resetCursorToDefault();
+        stopPlacing();
+        if(!storedObstacles.isEmpty()){
+            restoreObstacles();
+        }
     }
 
     @FXML
@@ -391,7 +397,7 @@ public class MainControlController  implements Initializable  {
 
             storeObstacles();
             resetCursorToDefault();
-            double distance=getObstacleDistanceFromStopway();
+            double distance=getObstacleDistanceFromRunway();
             Runway run=runwaySelector.getValue();
             obstacle.setDistance((int) distance);
             run.setObstacle(obstacle);
@@ -865,6 +871,53 @@ public class MainControlController  implements Initializable  {
     }
 
     private static final double STOPWAY_SCALE_FACTOR = 10.0;
+    public double  getObstacleDistanceFromRunway() {
+
+        Rectangle stopwayRect = (Rectangle) runwayGroup.lookup("#runway");
+        if (stopwayRect == null) {
+            System.out.println("Stopway rectangle not found!");
+            return -1;
+        }
+
+
+        ImageView lastObstacle = getLastPlacedObstacle();
+        if (lastObstacle == null) {
+            System.out.println("No obstacles found!");
+            return -1;
+        }
+
+
+        Bounds stopwayBounds = stopwayRect.getBoundsInParent();
+        Bounds obstacleBounds = lastObstacle.getBoundsInParent();
+
+
+        double stopwayStartX = stopwayBounds.getMinX();
+        double stopwayStartY = stopwayBounds.getMinY();
+
+
+        double obstacleCenterX = (obstacleBounds.getMinX() + obstacleBounds.getMaxX()) / 2;
+        double obstacleCenterY = (obstacleBounds.getMinY() + obstacleBounds.getMaxY()) / 2;
+
+
+        double stopwayAngle = stopwayRect.getRotate();
+
+
+        double dx = obstacleCenterX - stopwayStartX;
+        double dy = obstacleCenterY - stopwayStartY;
+
+
+        double projectedDistance = dx * Math.cos(Math.toRadians(stopwayAngle)) +
+                dy * Math.sin(Math.toRadians(stopwayAngle));
+
+
+        double realDistance = projectedDistance / STOPWAY_SCALE_FACTOR;
+        realDistance+=lastObstacle.getFitHeight()/STOPWAY_SCALE_FACTOR;
+
+        System.out.println("Rendered Distance: " + projectedDistance + "px");
+        System.out.println("Real Distance: " + realDistance + " actual units");
+
+        return realDistance;
+    }
 
     public double  getObstacleDistanceFromStopway() {
 

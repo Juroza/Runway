@@ -30,6 +30,7 @@ public class RunwayRenderer {
 
 
     public static List<Node> generateTopDownRunway(Runway runwayInput ){
+        runwayInput.redeclareALL();
         List<Node> objects = new ArrayList<>();
         Image runwayImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/158.jpg")));
         ImagePattern runwayPattern = new ImagePattern(
@@ -82,14 +83,31 @@ public class RunwayRenderer {
 
         stopwayRect.setLayoutX(runwayRect.getLayoutX()-runwayInput.getStopway()*10);
         stopwayRect.setLayoutY(runwayRect.getLayoutY());
-        toraRect.setLayoutX(runwayRect.getLayoutX());
-        toraRect.setLayoutY(runwayRect.getLayoutY());
+
         todaRect.setLayoutX(runwayRect.getLayoutX());
         todaRect.setLayoutY(runwayRect.getLayoutY());
-        ldaRect.setLayoutX(runwayRect.getLayoutX());
-        ldaRect.setLayoutY(runwayRect.getLayoutY());
-        asdaRect.setLayoutX(runwayRect.getLayoutX());
-        asdaRect.setLayoutY(runwayRect.getLayoutY());
+        if(runwayInput.getObstacle().getDistance()>runwayInput.getLength()/2){
+            ldaRect.setLayoutX(runwayRect.getLayoutX());
+            ldaRect.setLayoutY(runwayRect.getLayoutY());
+            toraRect.setLayoutX(runwayRect.getLayoutX());
+            toraRect.setLayoutY(runwayRect.getLayoutY());
+            todaRect.setLayoutX(runwayRect.getLayoutX());
+            todaRect.setLayoutY(runwayRect.getLayoutY());
+            asdaRect.setLayoutX(runwayRect.getLayoutX());
+            asdaRect.setLayoutY(runwayRect.getLayoutY());
+        }else{
+            toraRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+        toraRect.setLayoutY(runwayRect.getLayoutY());
+            ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+            ldaRect.setLayoutY(runwayRect.getLayoutY());
+            todaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+            todaRect.setLayoutY(runwayRect.getLayoutY());
+            asdaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+            asdaRect.setLayoutY(runwayRect.getLayoutY());
+        }
+
+
+
         clearwayRect.setLayoutX(toraRect.getLayoutX()+toraRect.getWidth());
         clearwayRect.setLayoutY(toraRect.getLayoutY()-((clearwayRect.getHeight()-toraRect.getHeight())/2));
         CAGRect.setLayoutX(stopwayRect.getLayoutX()-(CAGRect.getWidth()-stopwayRect.getWidth())/2);
@@ -111,7 +129,7 @@ public class RunwayRenderer {
     }
 
     public static List<Node> generateSideOnRunway(Runway runwayInput){
-        runwayInput.getDisplacedThreshold();
+
         List<Node> objects = new ArrayList<>();
         Image runwayImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/tarmac.jpg")));
         ImagePattern runwayPattern = new ImagePattern(
