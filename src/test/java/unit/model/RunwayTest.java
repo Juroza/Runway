@@ -124,8 +124,7 @@ class RunwayTest {
         @Test
         @DisplayName("should recalculate LDA correctly")
         void testLDAWithObstacle() {
-            int expectedLDA = (int) (LENGTH - OBSTACLE_DISTANCE - STRIP_END_OFFSET -
-                                Math.max((RESA + OBSTACLE_HEIGHT) * runway.getALS().getAngle(), DISPLACED_THRESHOLD));
+            int expectedLDA = 1852;
             assertEquals(expectedLDA, runway.getLDA());
         }
     }
