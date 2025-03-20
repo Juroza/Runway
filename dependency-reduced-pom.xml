@@ -7,6 +7,35 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer>
+                  <mainClass>group50.Launcher</mainClass>
+                </transformer>
+              </transformers>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <version>3.5.0</version>
       </plugin>
@@ -54,16 +83,6 @@
                       <mainClass>group50.Launcher</mainClass>
                     </transformer>
                   </transformers>
-                  <filters>
-                    <filter>
-                      <artifact>*:*</artifact>
-                      <excludes>
-                        <exclude>META-INF/*.SF</exclude>
-                        <exclude>META-INF/*.DSA</exclude>
-                        <exclude>META-INF/*.RSA</exclude>
-                      </excludes>
-                    </filter>
-                  </filters>
                 </configuration>
               </execution>
             </executions>
@@ -74,44 +93,38 @@
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-graphics</artifactId>
-          <version>21</version>
+          <version>${javafx.version}</version>
           <classifier>win</classifier>
-          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-graphics</artifactId>
-          <version>21</version>
+          <version>${javafx.version}</version>
           <classifier>mac</classifier>
-          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-graphics</artifactId>
-          <version>21</version>
+          <version>${javafx.version}</version>
           <classifier>linux</classifier>
-          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-media</artifactId>
-          <version>21</version>
+          <version>${javafx.version}</version>
           <classifier>win</classifier>
-          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-media</artifactId>
-          <version>21</version>
+          <version>${javafx.version}</version>
           <classifier>mac</classifier>
-          <scope>compile</scope>
         </dependency>
         <dependency>
           <groupId>org.openjfx</groupId>
           <artifactId>javafx-media</artifactId>
-          <version>21</version>
+          <version>${javafx.version}</version>
           <classifier>linux</classifier>
-          <scope>compile</scope>
         </dependency>
       </dependencies>
     </profile>
