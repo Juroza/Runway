@@ -13,6 +13,13 @@ A JavaFX application for visualizing runway configurations with support for dyna
 
 ---
 
+## 🔑 Login
+
+- **username**: bob  
+- **password**: 123456  
+
+---
+
 ## 🧰 Requirements
 - Java **19** (or compatible version).
 - Maven **3.6+**.
@@ -32,12 +39,3 @@ java --module-path /path/to/javafx-sdk-21/lib \
 -Recommended doesnt require download of SDKs
 ```bash
 mvn javafx:run
-
----
-
-## 🔑 Login
-
-- **username**: bob  
-- **password**: 123456  
-
----
