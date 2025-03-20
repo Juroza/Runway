@@ -87,24 +87,33 @@ public class RunwayRenderer {
         todaRect.setLayoutX(runwayRect.getLayoutX());
         todaRect.setLayoutY(runwayRect.getLayoutY());
         if(runwayInput.getObstacle().getDistance()>runwayInput.getLength()/2){
-            ldaRect.setLayoutX(runwayRect.getLayoutX());
-            ldaRect.setLayoutY(runwayRect.getLayoutY());
-            toraRect.setLayoutX(runwayRect.getLayoutX());
-            toraRect.setLayoutY(runwayRect.getLayoutY());
-            todaRect.setLayoutX(runwayRect.getLayoutX());
-            todaRect.setLayoutY(runwayRect.getLayoutY());
-            asdaRect.setLayoutX(runwayRect.getLayoutX());
-            asdaRect.setLayoutY(runwayRect.getLayoutY());
+                ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getDisplacedThreshold()*10);
+                ldaRect.setLayoutY(runwayRect.getLayoutY());
+
+                toraRect.setLayoutX(runwayRect.getLayoutX());
+                toraRect.setLayoutY(runwayRect.getLayoutY());
+                todaRect.setLayoutX(runwayRect.getLayoutX());
+                todaRect.setLayoutY(runwayRect.getLayoutY());
+                asdaRect.setLayoutX(runwayRect.getLayoutX());
+                asdaRect.setLayoutY(runwayRect.getLayoutY());
         }else{
-            toraRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
-        toraRect.setLayoutY(runwayRect.getLayoutY());
-            ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
-            ldaRect.setLayoutY(runwayRect.getLayoutY());
-            todaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
-            todaRect.setLayoutY(runwayRect.getLayoutY());
-            asdaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
-            asdaRect.setLayoutY(runwayRect.getLayoutY());
+            if(runwayInput.getObstacle().getDistance()<runwayInput.getDisplacedThreshold()){
+                ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getDisplacedThreshold()*10);
+                ldaRect.setLayoutY(runwayRect.getLayoutY());
+            }else {
+                ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+                ldaRect.setLayoutY(runwayRect.getLayoutY());
+            }
+                toraRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+                toraRect.setLayoutY(runwayRect.getLayoutY());
+
+                todaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+                todaRect.setLayoutY(runwayRect.getLayoutY());
+                asdaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+                asdaRect.setLayoutY(runwayRect.getLayoutY());
         }
+
+
 
 
 

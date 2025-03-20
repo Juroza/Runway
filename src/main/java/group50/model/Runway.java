@@ -65,7 +65,7 @@ public class Runway {
     if (!hasObstacle()) return length - displacedThreshold;
     if (obstacle.getDistance() > length / 2) {
       System.out.println(obstacle.getDistance()+"-"+displacedThreshold);
-      return obstacle.getDistance() - displacedThreshold;
+      return obstacle.getDistance() - displacedThreshold- obstacle.getScale()/2;
     }
     return round(length - obstacle.getDistance() - STRIPENDOFFSET - max((RESA + obstacle.getHeight()*ALS.getAngle()), displacedThreshold) - 0.5f);
   }
