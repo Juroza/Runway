@@ -33,6 +33,11 @@ java --module-path /path/to/javafx-sdk-21/lib \
 ```bash
 mvn javafx:run
 
-##  Login
-- username: bob
-- password: 123456
+---
+
+## 🔑 Login
+
+- **username**: bob  
+- **password**: 123456  
+
+---
