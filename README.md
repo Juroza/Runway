@@ -13,6 +13,14 @@ A JavaFX application for visualizing runway configurations with support for dyna
 
 ---
 
+## 🔑 Login
+
+- **username**: bob  
+- **password**: 123456
+- **firebase key**：runway-c8831-firebase-adminsdk-fbsvc-82b0a7918b.json
+
+---
+
 ## 🧰 Requirements
 - Java **19** (or compatible version).
 - Maven **3.6+**.
