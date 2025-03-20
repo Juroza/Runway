@@ -32,3 +32,7 @@ java --module-path /path/to/javafx-sdk-21/lib \
 -Recommended doesnt require download of SDKs
 ```bash
 mvn javafx:run
+
+##  Login
+- username: bob
+- password: 123456
