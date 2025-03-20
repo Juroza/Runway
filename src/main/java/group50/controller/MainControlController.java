@@ -5,8 +5,18 @@ import group50.graphics.RunwayRenderer;
 import group50.model.Obstacle;
 import group50.model.Runway;
 
+import java.awt.*;
 import java.io.File;
 
+import javafx.scene.Cursor;
+import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import group50.utils.DatabaseManager;
 import group50.utils.ObstacleManager;
 import javafx.application.Platform;
@@ -30,6 +40,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -46,6 +57,12 @@ public class MainControlController  implements Initializable  {
     @FXML private ComboBox<Obstacle> obstacleComboBox;
     @FXML private RadioButton showCAGToggle;
     @FXML private RadioButton showClearwayToggle;
+    @FXML private MenuItem displayHelpMenuItem;
+    @FXML private void handelDisplayHelp(){
+      showPDF();
+    }
+
+
     @FXML
     private ImageView arrowImage;
     private List<StoredObstacle> storedObstacles = new ArrayList<>();
@@ -219,7 +236,20 @@ public class MainControlController  implements Initializable  {
         centerRunwayAtDefaultScale();
     }
 
+    private void showPDF() {
+        try {
+            URL pdfUrl = getClass().getResource("/images/Help-Document.pdf");
+            if (pdfUrl != null) {
+                File pdfFile = new File(pdfUrl.toURI());
+                Desktop.getDesktop().open(pdfFile);
+            } else {
+                System.out.println("PDF file not found in resources!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
+    }
     @FXML
     public void handleRunwaySelectorInput(){
         handleViewTypeSelection();

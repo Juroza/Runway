@@ -96,6 +96,11 @@
                   <MenuItem mnemonicParsing="false" text="Generate Report" />
               </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+              <items>
+                  <MenuItem fx:id="displayHelpMenuItem" mnemonicParsing="false" onAction="#handelDisplayHelp" text="Display Help Document" />
+              </items>
+            </Menu>
       </menus>
     </MenuBar>
       <StackPane prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
@@ -160,7 +165,7 @@
                                    <ComboBox fx:id="obstacleComboBox" promptText="Choose an Obstacle" style="-fx-pref-width: 250px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
                                    <Button fx:id="addObstacleButton" mnemonicParsing="false" onAction="#handleAddObstacle" styleClass="wii-button" text="Add Obstacle" />
                                </HBox>
-                              <Button mnemonicParsing="false" text="Add Obstacle Type" onAction="#handleAddObstacleType"  styleClass="wii-button" />
+                              <Button mnemonicParsing="false" onAction="#handleAddObstacleType" styleClass="wii-button" text="Add Obstacle Type" />
 
                                <HBox alignment="CENTER_LEFT" spacing="10">
                                  <Button fx:id="resetViewButton" mnemonicParsing="false" onAction="#handleResetView" styleClass="wii-button" text="Reset View" />
