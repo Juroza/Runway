@@ -6,7 +6,7 @@ import group50.model.Obstacle;
 import group50.model.Runway;
 
 import java.awt.*;
-import java.io.File;
+import java.io.*;
 
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
@@ -37,7 +37,6 @@ import javafx.fxml.Initializable;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
@@ -238,18 +237,31 @@ public class MainControlController  implements Initializable  {
 
     private void showPDF() {
         try {
-            URL pdfUrl = getClass().getResource("/images/Help-Document.pdf");
-            if (pdfUrl != null) {
-                File pdfFile = new File(pdfUrl.toURI());
-                Desktop.getDesktop().open(pdfFile);
+            InputStream pdfStream = getClass().getResourceAsStream("/images/Help-Document.pdf");
+            if (pdfStream != null) {
+                // Create a temporary file
+                File tempPdf = File.createTempFile("Help-Document", ".pdf");
+                tempPdf.deleteOnExit();
+
+                // Copy the stream to the temporary file
+                try (OutputStream out = new FileOutputStream(tempPdf)) {
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = pdfStream.read(buffer)) != -1) {
+                        out.write(buffer, 0, bytesRead);
+                    }
+                }
+
+                // Open the file with the default system viewer
+                Desktop.getDesktop().open(tempPdf);
             } else {
                 System.out.println("PDF file not found in resources!");
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
+
     @FXML
     public void handleRunwaySelectorInput(){
         handleViewTypeSelection();
