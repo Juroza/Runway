@@ -2,7 +2,6 @@ package group50.graphics;
 
 import group50.model.Runway;
 
-
 import java.util.*;
 
 import javafx.scene.Node;
@@ -78,24 +77,26 @@ public class RunwayRenderer {
         clearwayRect.setOpacity(layerOpacity);
         Rectangle CAGRect= new Rectangle(runwayInput.getClearedAndGradedLengthBeyondRunwayEnds()*10*2+runwayRect.getWidth(),runwayInput.getClearedAndGradedWidth()*10,CAGAREA);
         CAGRect.setOpacity(layerOpacity);
+
         runwayRect.setLayoutX(grassArea.getCenterX() - runwayRect.getWidth() / 2);
         runwayRect.setLayoutY(grassArea.getCenterY() - runwayRect.getHeight() / 2);
 
         stopwayRect.setLayoutX(runwayRect.getLayoutX()-runwayInput.getStopway()*10);
         stopwayRect.setLayoutY(runwayRect.getLayoutY());
 
+
         todaRect.setLayoutX(runwayRect.getLayoutX());
         todaRect.setLayoutY(runwayRect.getLayoutY());
         if(runwayInput.getObstacle().getDistance()>runwayInput.getLength()/2){
-                ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getDisplacedThreshold()*10);
-                ldaRect.setLayoutY(runwayRect.getLayoutY());
+            ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getDisplacedThreshold()*10);
+            ldaRect.setLayoutY(runwayRect.getLayoutY());
 
-                toraRect.setLayoutX(runwayRect.getLayoutX());
-                toraRect.setLayoutY(runwayRect.getLayoutY());
-                todaRect.setLayoutX(runwayRect.getLayoutX());
-                todaRect.setLayoutY(runwayRect.getLayoutY());
-                asdaRect.setLayoutX(runwayRect.getLayoutX());
-                asdaRect.setLayoutY(runwayRect.getLayoutY());
+            toraRect.setLayoutX(runwayRect.getLayoutX());
+            toraRect.setLayoutY(runwayRect.getLayoutY());
+            todaRect.setLayoutX(runwayRect.getLayoutX());
+            todaRect.setLayoutY(runwayRect.getLayoutY());
+            asdaRect.setLayoutX(runwayRect.getLayoutX());
+            asdaRect.setLayoutY(runwayRect.getLayoutY());
         }else{
             if(runwayInput.getObstacle().getDistance()<runwayInput.getDisplacedThreshold()){
                 ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getDisplacedThreshold()*10);
@@ -104,13 +105,13 @@ public class RunwayRenderer {
                 ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
                 ldaRect.setLayoutY(runwayRect.getLayoutY());
             }
-                toraRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
-                toraRect.setLayoutY(runwayRect.getLayoutY());
+            toraRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+            toraRect.setLayoutY(runwayRect.getLayoutY());
 
-                todaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
-                todaRect.setLayoutY(runwayRect.getLayoutY());
-                asdaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
-                asdaRect.setLayoutY(runwayRect.getLayoutY());
+            todaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+            todaRect.setLayoutY(runwayRect.getLayoutY());
+            asdaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+            asdaRect.setLayoutY(runwayRect.getLayoutY());
         }
 
 
@@ -122,6 +123,27 @@ public class RunwayRenderer {
         CAGRect.setLayoutX(stopwayRect.getLayoutX()-(CAGRect.getWidth()-stopwayRect.getWidth())/2);
         CAGRect.setLayoutY(stopwayRect.getLayoutY()-(CAGRect.getHeight()-stopwayRect.getHeight())/2);
         objects.addAll(Arrays.asList(grassArea,CAGRect,stopwayRect, runwayRect, ldaRect, toraRect, todaRect, asdaRect,clearwayRect));
+        if(runwayInput.hasObstacle()){
+            Image obstacleImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/topDown/"+runwayInput.getObstacle().getPath())));
+            ImagePattern obstaclePattern= new ImagePattern(
+                    obstacleImage,
+                    0, 0,         // Start painting at top-left
+                    1, 1,         // Cover whole rectangle (because proportional = true)
+                    true          // proportional = true so it stretches nicely
+            );
+
+            double width = obstacleImage.getWidth();
+            double height = obstacleImage.getHeight();
+            Rectangle obstacle= new Rectangle(runwayInput.getObstacle().getScale(),(obstacleImage.getHeight() / obstacleImage.getWidth()) * runwayInput.getObstacle().getScale());
+            obstacle.setFill(obstaclePattern);
+            obstacle.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+            System.out.println("RUNWAY RENDERED OBSTACLE X: "+obstacle.getLayoutX()+" TRUE DISTANCE: "+runwayInput.getObstacle().getDistance() );
+            obstacle.setLayoutY(runwayRect.getLayoutY() + (runwayRect.getHeight() / 2) - (obstacle.getHeight() / 2));
+            obstacle.setRotate(-90);
+            objects.add(obstacle);
+        }
+
+
         runwayRect.setId("runway");
         stopwayRect.setId("stopway");
         grassArea.setId("grass");
@@ -132,7 +154,7 @@ public class RunwayRenderer {
         asdaRect.setId("asda");
         clearwayRect.setId("clearway");
         CAGRect.setId("CAG");
-
+        //3drawImageOnRunway(objects,"/images/plane.png",10);
         return objects;
 
     }
@@ -194,31 +216,70 @@ public class RunwayRenderer {
         skyBoxRect.setLayoutX(grassArea.getLayoutX());
         skyBoxRect.setLayoutY(grassArea.getLayoutY()-skyBoxRect.getHeight());
 
-        resaRect.setLayoutX(stopwayRect.getLayoutX());
+        resaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getLength()*10);
         resaRect.setLayoutY(stopwayRect.getLayoutY()-resaRect.getHeight());
-        ldaRect.setLayoutX(runwayRect.getLayoutX());
+
+        ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getDisplacedThreshold()*10);
         ldaRect.setLayoutY(runwayRect.getLayoutY()-ldaRect.getHeight());
-        double alsStartX = runwayRect.getLayoutX();
+        if(runwayInput.getObstacle().getDistance()>runwayInput.getLength()/2){
+            ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getDisplacedThreshold()*10);
+
+
+        }else{
+            if(runwayInput.getObstacle().getDistance()<runwayInput.getDisplacedThreshold()){
+                ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getDisplacedThreshold()*10);
+            }else {
+                ldaRect.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+            }
+        }
+        double angleDegrees = runwayInput.getALS().getAngle(); // Example: 1.15 degrees for a 50:1 slope
+        double angleRadians = Math.toRadians(angleDegrees);
+
+// Horizontal length you want
+        double alsLength = 9000; // e.g., 3000 meters
+
+// Calculate vertical height based on angle
+        double alsHeight = Math.tan(angleRadians) * alsLength;
+
+// Start point (where LDA begins)
+        double alsStartX = ldaRect.getLayoutX()+9000;
         double alsStartY = runwayRect.getLayoutY();
-        double alsLength = 3000;  // meters
-        double alsSlope = 5;     // 50:1
-        double alsHeight = alsLength / alsSlope;  // 60m vertical rise
 
-
+// Now build the ALS triangle
         Polygon alsTriangle = new Polygon();
         alsTriangle.getPoints().addAll(
-                alsStartX, alsStartY,                                      // Start at runway start
-                alsStartX - alsLength, alsStartY - alsHeight,             // End of the slope (down and left)
-                alsStartX - alsLength, alsStartY                           // Bottom back to start level
+                alsStartX, alsStartY,
+                alsStartX - alsLength, alsStartY - alsHeight,
+                alsStartX - alsLength, alsStartY
         );
+
         alsTriangle.setFill(Color.RED);
+        alsTriangle.setOpacity(layerOpacity);
 
 
 
 
 
         objects.addAll(Arrays.asList(skyBoxRect,grassArea,stopwayRect,runwayRect,resaRect,ldaRect,alsTriangle));
+        if(runwayInput.hasObstacle()){
+            Image obstacleImage = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream("/images/sideOn/"+runwayInput.getObstacle().getPath())));
+            ImagePattern obstaclePattern= new ImagePattern(
+                    obstacleImage,
+                    0, 0,         // Start painting at top-left
+                    1, 1,         // Cover whole rectangle (because proportional = true)
+                    true          // proportional = true so it stretches nicely
+            );
 
+            double width = obstacleImage.getWidth();
+            double height = obstacleImage.getHeight();
+            Rectangle obstacle= new Rectangle(runwayInput.getObstacle().getScale(),(obstacleImage.getHeight() / obstacleImage.getWidth()) * runwayInput.getObstacle().getScale());
+            obstacle.setFill(obstaclePattern);
+            obstacle.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10-(obstacle.getWidth()));
+            System.out.println("RUNWAY RENDERED OBSTACLE X: "+obstacle.getLayoutX()+" TRUE DISTANCE: "+runwayInput.getObstacle().getDistance() );
+            obstacle.setLayoutY(runwayRect.getLayoutY() - obstacle.getHeight());
+
+            objects.add(obstacle);
+        }
         runwayRect.setId("runway");
         stopwayRect.setId("stopway");
         grassArea.setId("grass");
@@ -227,5 +288,33 @@ public class RunwayRenderer {
         resaRect.setId("resa");
         alsTriangle.setId("als");
         return objects;
+    }
+
+    public static void drawImageOnRunway(List<Node> objects, String imagePath, double distanceX) {
+        Image image = new Image(Objects.requireNonNull(RunwayRenderer.class.getResourceAsStream(imagePath)));
+        ImageView imageView = new ImageView(image);
+
+        // Find the runway rectangle in the list of objects
+        Rectangle runway = null;
+        for (Node node : objects) {
+            if (node.getId() != null && node.getId().equals("runway")) {
+                runway = (Rectangle) node;
+                break;
+            }
+        }
+
+        if (runway != null) {
+            // Calculate the X position based on the runway's layoutX and the provided distance
+            double imageX = runway.getLayoutX() + distanceX * 10; // Assuming 1 unit in distanceX is 10 pixels
+
+            // Position the ImageView
+            imageView.setLayoutX(imageX);
+            imageView.setLayoutY(runway.getLayoutY() + (runway.getHeight() - image.getHeight()) / 2); // Center vertically on the runway
+
+            // Add the ImageView to the list of objects
+            objects.add(imageView);
+        } else {
+            System.err.println("Runway rectangle not found. Cannot draw image.");
+        }
     }
 }

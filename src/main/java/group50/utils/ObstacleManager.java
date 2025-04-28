@@ -8,10 +8,10 @@ public class ObstacleManager {
     private static int obstacleCounter = 0;
 
     static {
-        obstacleList.add(new Obstacle("Tree", 1,  50, "/images/tree.png", 600));
-        obstacleList.add(new Obstacle("Car", 2,  100, "/images/car.png", 500));
-        obstacleList.add(new Obstacle("????", 12, 200, "/images/ufo.png", 1000));
-        obstacleList.add(new Obstacle("Plane", 8, 150, "/images/plane.png", 1500));
+        obstacleList.add(new Obstacle("Tree", 1,  50, "tree.png", 600));
+        obstacleList.add(new Obstacle("Car", 2,  100, "car.png", 500));
+        obstacleList.add(new Obstacle("????", 12, 200, "ufo.png", 1000));
+        obstacleList.add(new Obstacle("Plane", 8, 150, "plane.png", 1500));
     }
 
 
@@ -22,6 +22,14 @@ public class ObstacleManager {
 
     public static void addObstacle(Obstacle obstacle) {
         obstacleList.add(obstacle);
+    }
+    public static Obstacle getObstacleByName(String name) {
+        for (Obstacle obstacle : obstacleList) {
+            if (obstacle.getName().equalsIgnoreCase(name)) {
+                return obstacle;
+            }
+        }
+        return null; // or throw an exception if you want
     }
 
 

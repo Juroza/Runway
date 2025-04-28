@@ -12,6 +12,7 @@ public class Obstacle {
 
   private String name;
   private int height;
+  public int renderWidth,renderHeight;
 
   private int distance; //distance is measured from near end of the runway
 private String path;

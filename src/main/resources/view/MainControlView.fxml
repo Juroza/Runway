@@ -46,7 +46,6 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.SplitPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -64,7 +63,12 @@
           <items>
             <MenuItem mnemonicParsing="false" text="Open…" />
                   <MenuItem mnemonicParsing="false" onAction="#handleImportFile" text="Import" />
-                  <MenuItem mnemonicParsing="false" text="Export" />
+                  <Menu mnemonicParsing="false" text="Export">
+                    <items>
+                      <MenuItem fx:id="printReportMenuItem" mnemonicParsing="false" onAction="#printReport" text="Print Report" />
+                        <MenuItem fx:id="exportMenuItem" mnemonicParsing="false" onAction="#exportReport" text="Export" />
+                    </items>
+                  </Menu>
             <SeparatorMenuItem mnemonicParsing="false" />
             <MenuItem mnemonicParsing="false" text="Save" />
             <MenuItem mnemonicParsing="false" text="Save As…" />
@@ -165,23 +169,11 @@
                                    <ComboBox fx:id="obstacleComboBox" promptText="Choose an Obstacle" style="-fx-pref-width: 250px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
                                    <Button fx:id="addObstacleButton" mnemonicParsing="false" onAction="#handleAddObstacle" styleClass="wii-button" text="Add Obstacle" />
                                </HBox>
-                              <Button mnemonicParsing="false" onAction="#handleAddObstacleType" styleClass="wii-button" text="Add Obstacle Type" />
 
                                <HBox alignment="CENTER_LEFT" spacing="10">
                                  <Button fx:id="resetViewButton" mnemonicParsing="false" onAction="#handleResetView" styleClass="wii-button" text="Reset View" />
 
                                </HBox>
-
-                               <Label style="-fx-font-size: 14px; -fx-font-weight: bold;" text="Manual Runway Parameters Input" />
-                               <Label text="Length (m)" />
-                               <TextField fx:id="lengthInput" promptText="Enter Runway Length" />
-                               <Label text="Clearway Length (m)" />
-                               <TextField fx:id="clearwayInput" promptText="Enter Clearway Length" />
-                               <Label text="Stopway (m)" />
-                               <TextField fx:id="stopwayInput" promptText="Enter Stopway Length" />
-                               <Label text="Displaced Threshold (m)" />
-                               <TextField fx:id="displacedThresholdInput" promptText="Enter Displaced Threshold" />
-                               <Button onAction="#handleApplyParameters" prefWidth="150" text="Apply Parameters" />
                                <HBox alignment="CENTER_LEFT" spacing="20">
                                    <Label fx:id="welcomeLabel" text="Welcome, XXX" />
                                    <Label fx:id="airportLabel" text="Welcome to XXX Airport" />

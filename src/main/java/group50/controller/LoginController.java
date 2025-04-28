@@ -19,8 +19,7 @@ public class LoginController {
     @FXML private PasswordField passwordField;
     @FXML private Label errorLabel;
     @FXML private Button loginButton;
-    @FXML
-    private ComboBox<String> airportComboBox;
+
 
     private Stage stage;
 
@@ -30,8 +29,6 @@ public class LoginController {
 
 
 
-
-        airportComboBox.getItems().addAll("LHR", "LGW", "JFK");
     }
 
     public void setStage(Stage stage) {
@@ -43,18 +40,12 @@ public class LoginController {
         loginButton.setDisable(true);
         String username = usernameField.getText().trim();
         String password = passwordField.getText();
-        String selectedAirport = airportComboBox.getValue();
 
-        if (selectedAirport == null || selectedAirport.equals("Select an airport...")) {
-            errorLabel.setText("Please choose an airport!");
-            errorLabel.setTextFill(Color.RED);
-            loginButton.setDisable(false);
-            return;
-        }
+
 
         if (DatabaseManager.validateUser(username, password)) {
             String role = DatabaseManager.getUserRole(username);
-            loadMainContent(role,username, selectedAirport);
+            loadMainContent(role,username);
         } else {
 
             errorLabel.setText("Incorrect user name or password！");
@@ -64,13 +55,13 @@ public class LoginController {
         loginButton.setDisable(false);
     }
 
-    private void loadMainContent(String role,String username, String airport) {
+    private void loadMainContent(String role,String username) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/MainControlView.fxml"));
             Parent root = loader.load();
 
             MainControlController controller = loader.getController();
-            controller.setUserRole(role, airport);
+            controller.setUserRole(role);
             controller.setUsername(username);
             controller.setRole(role);
 

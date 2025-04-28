@@ -31,7 +31,7 @@ public class Runway {
 
   private Obstacle obstacle = new Obstacle("name",0, 0, "", 0);
 
-  private Boolean hasObstacle() {
+  public Boolean hasObstacle() {
     return obstacle.getHeight() != 0;
   }
 
@@ -73,6 +73,9 @@ public class Runway {
 
 
   private String name;
+  private String ID;
+  public String getID(){ return ID;}
+  public void setID(String id){ ID=id;};
 
   private int length;
 

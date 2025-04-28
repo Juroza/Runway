@@ -1,6 +1,7 @@
 package group50.controller;
 
 
+import com.google.cloud.firestore.*;
 import group50.graphics.RunwayRenderer;
 import group50.model.Obstacle;
 import group50.model.Runway;
@@ -8,6 +9,8 @@ import group50.model.Runway;
 import java.awt.*;
 import java.io.*;
 
+import group50.network.Firebase;
+import group50.utils.PDFGenerator;
 import javafx.scene.Cursor;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
@@ -40,13 +43,19 @@ import javafx.stage.Stage;
 import java.net.URL;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
-import org.checkerframework.checker.units.qual.C;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import static group50.network.Firebase.readDocument;
 
 
 public class MainControlController  implements Initializable  {
@@ -56,7 +65,14 @@ public class MainControlController  implements Initializable  {
     @FXML private ComboBox<Obstacle> obstacleComboBox;
     @FXML private RadioButton showCAGToggle;
     @FXML private RadioButton showClearwayToggle;
-    @FXML private MenuItem displayHelpMenuItem;
+
+    @FXML private void printReport(){
+        PDFGenerator.printPDF(airport,runwayList,getUsername());
+    }
+    @FXML private void exportReport(){
+        Stage stage = new Stage();
+        exportRunwayWithDialog(getSelectedRunway(),stage);
+    }
     @FXML private void handelDisplayHelp(){
       showPDF();
     }
@@ -64,54 +80,27 @@ public class MainControlController  implements Initializable  {
 
     @FXML
     private ImageView arrowImage;
-    private List<StoredObstacle> storedObstacles = new ArrayList<>();
+    int oldTORA;
+    int oldTODA ;
+    long time;
+    int oldASDA ;
+    int oldLDA;
+    private String airport;
 
-    private static class StoredObstacle {
-        double localX, localY;
-        String imagePath;
-        double scale;
 
-        public StoredObstacle(double x, double y, String path, double scale) {
-            this.localX = x;
-            this.localY = y;
-            this.imagePath = path;
-            this.scale = scale;
-        }
-    }
-    private void storeObstacles() {
-        storedObstacles.clear();
-        for (Node node : runwayGroup.getChildren()) {
-            if (node instanceof ImageView) {
-                ImageView obstacle = (ImageView) node;
-                String imagePath = (String) obstacle.getUserData(); // Ensure path is stored
-                if (imagePath != null) {
-                    Point2D localPos = new Point2D(obstacle.getX(), obstacle.getY());
-                    storedObstacles.add(new StoredObstacle(localPos.getX(), localPos.getY(), imagePath, obstacle.getFitWidth()));
-                }
-            }
-        }
-    }
     private void restoreObstacles() {
-        for (StoredObstacle obstacleData : storedObstacles) {
-            addObstacleAt(obstacleData.localX, obstacleData.localY, obstacleData.imagePath, obstacleData.scale);
+        runwayGroup.getChildren().removeIf(node -> node instanceof ImageView); // Remove previous obstacles if any
+
+        Runway selectedRunway = getSelectedRunway();
+        if (selectedRunway != null && selectedRunway.getObstacle() != null) {
+            Obstacle obstacle = selectedRunway.getObstacle();
+            //addObstacleFromRunwayDistance(getSelectedRunway(),obstacle);
         }
     }
-    private void addObstacleAt(double x, double y, String path, double scale) {
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
 
-        ImageView imageView = new ImageView(image);
-        imageView.setFitWidth(scale);
-        imageView.setFitHeight((image.getHeight() / image.getWidth()) * scale);
-        imageView.setX(x);
-        imageView.setY(y);
-        imageView.setUserData(path);
-        imageView.setRotate(-90);
 
-        runwayGroup.getChildren().add(imageView);
-        stopPlacing();
-        resetCursorToDefault();
 
-    }
+
 
     private static final double MIN_SCALE = 0.0000001;
     private static final double MAX_SCALE = 50000.0;
@@ -135,18 +124,11 @@ public class MainControlController  implements Initializable  {
 
 
 
-    @FXML
-    private TextField lengthInput;
-    @FXML
-    private TextField clearwayInput;
-    @FXML
-    private TextField stopwayInput;
-    @FXML
-    private TextField displacedThresholdInput;
+
 
     //for add obstacle
     @FXML private Button addObstacleButton;
-    @FXML private Label obstacleNotificationLabel;
+
 
     //for user role
     @FXML private Label welcomeLabel;
@@ -157,9 +139,8 @@ public class MainControlController  implements Initializable  {
     private double mouseAnchorY;
     private double initialTranslateX;
     private double initialTranslateY;
-    private double initialScaleX;
-    private double initialScaleY;
-    private boolean switchingViews=false;
+
+
 
     List<Node> objs= new ArrayList<>();
     private String username;
@@ -191,12 +172,10 @@ public class MainControlController  implements Initializable  {
 
     @FXML
     public void handleAsdaOverlayShow() {
-        resetCursorToDefault();
         handleOverlayToggle("asda", showAsdaToggle);
     }
     @FXML
     public void handleALSOverlayShow(){
-        initializeCursor();
         handleOverlayToggle("als",showALSToggle);
     }
 
@@ -223,13 +202,6 @@ public class MainControlController  implements Initializable  {
             }
         }
     }
-    private void allowOnlyDigits(TextField textField) {
-        textField.textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                textField.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
-    }
 
     public void resetCameraPosition() {
         centerRunwayAtDefaultScale();
@@ -255,7 +227,7 @@ public class MainControlController  implements Initializable  {
                 // Open the file with the default system viewer
                 Desktop.getDesktop().open(tempPdf);
             } else {
-                System.out.println("PDF file not found in resources!");
+                System.out.println("PDF file not found in resources");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -269,20 +241,22 @@ public class MainControlController  implements Initializable  {
     @FXML
     public void handleViewTypeSelection() {
         String type = viewTypeSelector.getSelectionModel().getSelectedItem();
+        resetCameraPosition();
+        resetCursorToDefault();
+        stopPlacing();
         if (type.equals("Top Down")) {
 
             loadTopDownView();
             resetControlPanel();
         } else if (type.equals("Side on")) {
-            storedObstacles.clear();
             loadSideOnView();
             resetControlPanel();
         }
         resetCameraPosition();
         resetCursorToDefault();
         stopPlacing();
-        if(!storedObstacles.isEmpty()){
-            restoreObstacles();
+        if(!getSelectedRunway().getObstacle().getName().equals("name")){
+            handleApplyParameters();
         }
     }
 
@@ -294,10 +268,15 @@ public class MainControlController  implements Initializable  {
     private void addImageAtClick(double sceneX, double sceneY,String path,double scale) {
 
         Point2D localPoint = runwayGroup.sceneToLocal(sceneX, sceneY);
+        Obstacle obstacle = obstacleComboBox.getValue();
+        if (obstacle == null) {
+            System.out.println("No obstacle selected.");
+            return; // Or maybe show a warning popup
+        }
 
-
-        Image image = new Image(Objects.requireNonNull(getClass().getResourceAsStream(path)));
-
+        Image image = viewTypeSelector.getSelectionModel().getSelectedItem().equals("Top Down")
+                ? new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/topDown/"+obstacle.getPath())))
+                : new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/sideOn/"+obstacle.getPath())));
 
         double originalWidth = image.getWidth();
         double originalHeight = image.getHeight();
@@ -402,9 +381,14 @@ public class MainControlController  implements Initializable  {
 
     private void initializeCursor() {
         if(viewContainer.getScene()==null) return;
-        Obstacle obstacle=obstacleComboBox.getValue();
-
-        Image cursorImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream(obstacle.getPath())));
+        Obstacle obstacle = obstacleComboBox.getValue();
+        if (obstacle == null) {
+            return; // Or maybe show a warning popup
+        }
+        Image cursorImage = viewTypeSelector.getSelectionModel().getSelectedItem().equals("Top Down")
+                ? new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/topDown/"+obstacle.getPath())))
+                : new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/sideOn/"+obstacle.getPath())))
+                ;
 
 
         double originalWidth = cursorImage.getWidth();
@@ -437,16 +421,47 @@ public class MainControlController  implements Initializable  {
         runwayGroup.setOnMouseClicked(mouseEvent -> {
             addImageAtClick(mouseEvent.getSceneX(), mouseEvent.getSceneY(), obstacle.getPath(),baseWidth);
 
-            storeObstacles();
             resetCursorToDefault();
             double distance=getObstacleDistanceFromRunway();
             Runway run=runwaySelector.getValue();
+            oldTODA=run.getTODA();
+            oldTORA=run.getTORA();
+            oldASDA=run.getASDA();
+            oldLDA=run.getLDA();
             obstacle.setDistance((int) distance);
             run.setObstacle(obstacle);
+            updateObstacleInFirebase(run);
             stopPlacing();
             handleViewTypeSelection();
 
         });
+    }
+    public void updateObstacleInFirebase(Runway runway) {
+        if (runway == null || runway.getID() == null || runway.getObstacle() == null) {
+            return;
+        }
+
+        try {
+            Firestore db = Firebase.getFirestore();
+            DocumentReference runwayRef = db.collection("airports")
+                    .document(airport)  // assuming you have this field already (you do)
+                    .collection("runways")
+                    .document(runway.getName());
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("Obstacle type", runway.getObstacle().getName());
+            updates.put("Obstacle height", runway.getObstacle().getHeight());
+            updates.put("Obstacle distance", runway.getObstacle().getDistance());
+            time= System.nanoTime();
+            updates.put("Last Modified",time );
+
+            runwayRef.update(updates)
+                    .addListener(() -> System.out.println(" Obstacle updated " + runway.getID()),
+                            Runnable::run);
+
+        } catch (Exception e) {
+            System.err.println( e.getMessage());
+        }
     }
     private ImageView cursorView;
     public void resetCursorToDefault() {
@@ -466,29 +481,62 @@ public class MainControlController  implements Initializable  {
                alert.setHeaderText(null);
                alert.setContentText("Airport File required");
                alert.showAndWait();
+
                throw new RuntimeException();
            }
 
 
-
            arrowImage.setImage(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/images/arrow.png"))));
            arrowImage.setScaleX(2);
-           allowOnlyDigits(lengthInput);
-           allowOnlyDigits(clearwayInput);
-           allowOnlyDigits(stopwayInput);
-           allowOnlyDigits(displacedThresholdInput);
            viewTypeSelector.getSelectionModel().select(0);
-
-           viewContainer.getChildren().add(runwayGroup);
            handleViewTypeSelection();
+           viewContainer.getChildren().add(runwayGroup);
            overlayRunThrough();
            Platform.runLater(this::resetCameraPosition);
+           CollectionReference runwaysRef = Firebase.getFirestore()
+                   .collection("airports")
+                   .document(airport)
+                   .collection("runways");
+           runwaysRef.addSnapshotListener((snapshots, error) -> {
+               if (error != null) {
+                   System.err.println("Listen failed: " + error);
+                   return;
+               }
+
+               for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                   switch (dc.getType()) {
+                       case ADDED:
+                           System.out.println( dc.getDocument().getData());
+                           break;
+                       case MODIFIED:
+                           System.out.println(dc.getDocument().getData());
+                           Object id= dc.getDocument().getData().get("id");
+                           Object timer= dc.getDocument().getData().get("Last Modified");
+                           long timeVal= (long) timer;
+                           System.out.println(getSelectedRunway().getID());
+                           if(timeVal!=time&&id.toString().equals(getSelectedRunway().getID())){
+                               System.out.println(id.toString());
+                               Platform.runLater(() -> {  // <-- Add this
+                                   Alert alert = new Alert(Alert.AlertType.WARNING);
+                                   alert.setTitle("Update");
+                                   alert.setHeaderText(null);
+                                   alert.setContentText("Airport File required"); // (You might want to change this message though)
+                                   alert.showAndWait();
+                                   replaceRunwayFromFirebaseData(dc.getDocument().getData());
+
+                               });  // <-- Close Platform.runLater
+                           }
+                           break;
+                       case REMOVED:
+                           break;
+                   }
+               }
+           });
 
            runwaySelector.setItems(FXCollections.observableArrayList(runwayList));
            if (!runwayList.isEmpty()) {
                runwaySelector.getSelectionModel().select(0);
            }
-
 
            viewContainer.setOnMousePressed(event -> {
                mouseAnchorX = event.getSceneX();
@@ -525,7 +573,7 @@ public class MainControlController  implements Initializable  {
                double dx = event.getSceneX() - pivotInScene.getX();
                double dy = event.getSceneY() - pivotInScene.getY();
                Obstacle obstacle= obstacleComboBox.getValue();
-               if(obstacle!=null){
+               if(obstacle!=null&&cursorView!=null){
                    cursorView.setFitWidth(obstacle.getScale() * newScaleX);
                    cursorView.setFitHeight((cursorView.getImage().getHeight() / cursorView.getImage().getWidth()) * cursorView.getFitWidth());
 
@@ -603,6 +651,62 @@ public class MainControlController  implements Initializable  {
         cursorView.setFitHeight((cursorView.getImage().getHeight() / cursorView.getImage().getWidth()) * cursorView.getFitWidth());
 
     }
+    private void replaceRunwayFromFirebaseData(Map<String, Object> data) {
+        if (data == null) {
+            return;
+        }
+
+        try {
+            String updatedId = (String) data.get("id");
+
+            for (int i = 0; i < runwayList.size(); i++) {
+                Runway localRunway = runwayList.get(i);
+
+                if (localRunway.getID().equals(updatedId)) {
+                    // Rebuild the updated runway from Firebase
+                    int length = Integer.parseInt(data.get("length").toString());
+                    int stripLength = Integer.parseInt(data.get("stripLength").toString());
+                    int stopway = Integer.parseInt(data.get("stopway").toString());
+                    int clearwayLength = Integer.parseInt(data.get("clearwayLength").toString());
+                    int clearwayWidth = Integer.parseInt(data.get("clearwayWidth").toString());
+                    int displacedThreshold = Integer.parseInt(data.get("displacedThreshold").toString());
+                    int RESA = Integer.parseInt(data.get("RESA").toString());
+
+                    Runway updatedRunway = new Runway(data.get("name").toString(), length, stripLength, stopway, clearwayLength, clearwayWidth, displacedThreshold, RESA);
+                    updatedRunway.setID(updatedId);
+
+                    if (data.containsKey("Obstacle type") && data.containsKey("Obstacle height") && data.containsKey("Obstacle distance")) {
+                        Obstacle obstacle = ObstacleManager.getObstacleByName(data.get("Obstacle type").toString());
+                        if (obstacle != null) {
+                            obstacle.setHeight(Integer.parseInt(data.get("Obstacle height").toString()));
+                            obstacle.setDistance(Integer.parseInt(data.get("Obstacle distance").toString()));
+                            updatedRunway.setObstacle(obstacle);
+                        }
+                    }
+
+                    updatedRunway.redeclareALL(); // Recalculate parameters
+
+                    // Replace the old runway
+                    runwayList.set(i, updatedRunway);
+
+                    // Refresh UI
+                    Platform.runLater(() -> {
+                        runwaySelector.setItems(FXCollections.observableArrayList(runwayList));
+                        runwaySelector.getSelectionModel().select(updatedRunway);
+                        handleViewTypeSelection();  // Refresh the view
+                    });
+                    return;
+                }
+            }
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
 
 
@@ -618,6 +722,9 @@ public class MainControlController  implements Initializable  {
         runwayGroup.getChildren().clear();
         runwayGroupStore.getChildren().clear();
         Runway selectedRunway = runwaySelector.getValue();
+        if(selectedRunway.hasObstacle()){
+            selectedRunway.redeclareALL();
+        }
         objs = RunwayRenderer.generateTopDownRunway(selectedRunway);
         runwayGroup.getChildren().addAll(objs);
         runwayGroupStore.getChildren().addAll(RunwayRenderer.generateTopDownRunway(selectedRunway));
@@ -631,6 +738,7 @@ public class MainControlController  implements Initializable  {
         System.out.println(degree);
         int val=Integer.parseInt(degree)*10;        System.out.println(val);
         runwayGroup.setRotate(val);
+
         arrowImage.setRotate(val);
     }
 
@@ -677,7 +785,9 @@ public class MainControlController  implements Initializable  {
 
 
         Runway selectedRunway = runwaySelector.getValue();
-
+        if(selectedRunway.hasObstacle()){
+            selectedRunway.redeclareALL();
+        }
 
         objs = RunwayRenderer.generateSideOnRunway(selectedRunway);
         runwayGroup.getChildren().addAll(objs);
@@ -708,6 +818,8 @@ public class MainControlController  implements Initializable  {
         }
 
         arrowImage.setRotate(0);
+        Platform.runLater(this::resetCameraPosition);
+
 
     }
 
@@ -721,49 +833,18 @@ public class MainControlController  implements Initializable  {
     @FXML
     private void handleApplyParameters() {
         System.out.println("Apply button clicked");
-        lengthInput.setText(lengthInput.getText().trim().replaceAll("\\s+", ""));
-        clearwayInput.setText(clearwayInput.getText().trim().replaceAll("\\s+", ""));
-        stopwayInput.setText(stopwayInput.getText().trim().replaceAll("\\s+", ""));
-        displacedThresholdInput.setText(displacedThresholdInput.getText().trim().replaceAll("\\s+", ""));
-        try{
-            if (lengthInput.getText().isEmpty() ||
-                clearwayInput.getText().isEmpty() ||
-                stopwayInput.getText().isEmpty() ||
-                displacedThresholdInput.getText().isEmpty()) {
-
-                Alert alert = new Alert (Alert.AlertType.WARNING);
-                alert.setTitle("Invalid Parameters");
-                alert.setHeaderText(null);
-                alert.setContentText("Please enter all runway parameters");
-                ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-                alert.getButtonTypes().setAll(okButton);
-                alert.showAndWait();
-                return;
-            }
-            if( Integer.parseInt(lengthInput.getText())<800){
-                Alert alert = new Alert (Alert.AlertType.WARNING);
-                alert.setTitle("Warning");
-                alert.setHeaderText(null);
-                alert.setContentText("Runway Length too short for operation");
-                ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
-                alert.getButtonTypes().setAll(okButton);
-                alert.showAndWait();
-                return;
-            }
+      try{
             Runway selectedRunway = getSelectedRunway();
 
             if (selectedRunway != null) {
 
-                int oldTORA = selectedRunway.getTORA();
-                int oldTODA = selectedRunway.getTODA();
-                int oldASDA = selectedRunway.getASDA();
-                int oldLDA = selectedRunway.getLDA();
 
 
-                int length = Integer.parseInt(lengthInput.getText());
-                int clearwayLength = Integer.parseInt(clearwayInput.getText());
-                int stopway = Integer.parseInt(stopwayInput.getText());
-                int displacedThreshold = Integer.parseInt(displacedThresholdInput.getText());
+
+                int length = selectedRunway.getLength();
+                int clearwayLength = selectedRunway.getClearwayLength();
+                int stopway = selectedRunway.getStopway();
+                int displacedThreshold = selectedRunway.getDisplacedThreshold();
 
 
                 selectedRunway.applyManualParameters(selectedRunway, length, clearwayLength, stopway, displacedThreshold);
@@ -808,19 +889,28 @@ public class MainControlController  implements Initializable  {
             alert.getButtonTypes().setAll(okButton);
             alert.showAndWait();
         }
+        stopPlacing();
+        resetCursorToDefault();
+        restoreObstacles();
     }
 
-    public void setUserRole (String role, String airport) {
+    public void setUserRole (String role) {
         welcomeLabel.setText("Welcome, " + role.toUpperCase());
         airportLabel.setText("Welcome to " + airport + "Airport!");
 
         boolean isViewer = role.equalsIgnoreCase("viewer");
 
-        lengthInput.setDisable(isViewer);
-        clearwayInput.setDisable(isViewer);
-        stopwayInput.setDisable(isViewer);
-        displacedThresholdInput.setDisable(isViewer);
 
+    }
+
+    private boolean isAdmin(){
+        return role.equalsIgnoreCase("admin");
+    }
+    private boolean isEditor(){
+        return role.equalsIgnoreCase("editor");
+    }
+    private boolean isViewer(){
+        return role.equalsIgnoreCase("viewer");
     }
 
     @FXML
@@ -841,6 +931,96 @@ public class MainControlController  implements Initializable  {
             e.printStackTrace();
         }
     }
+    public void exportAirportFromFirebaseToXML(String airportName,File file) {
+        try {
+            CollectionReference runwaysRef = Firebase.getFirestore()
+                    .collection("airports")
+                    .document(airportName)
+                    .collection("runways");
+
+            // This is a blocking call
+            List<QueryDocumentSnapshot> runwayDocs = runwaysRef.get().get().getDocuments();
+
+            // Build XML
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.newDocument();
+
+            Element airportElement = doc.createElement("Airport");
+            airportElement.setAttribute("name", airportName);
+            doc.appendChild(airportElement);
+
+            Element runwaysElement = doc.createElement("Runways");
+            airportElement.appendChild(runwaysElement);
+
+            for (var docSnap : runwayDocs) {
+                Map<String, Object> data = docSnap.getData();
+
+                Element runwayElement = doc.createElement("Runway");
+                runwaysElement.appendChild(runwayElement);
+
+                addTextElement(doc, runwayElement, "ID", safeString(data.get("id")));
+                addTextElement(doc, runwayElement, "Name", safeString(data.get("name")));
+                addTextElement(doc, runwayElement, "Length", safeString(data.get("length")));
+                addTextElement(doc, runwayElement, "StripLength", safeString(data.get("stripLength")));
+                addTextElement(doc, runwayElement, "Stopway", safeString(data.get("stopway")));
+                addTextElement(doc, runwayElement, "ClearwayLength", safeString(data.get("clearwayLength")));
+                addTextElement(doc, runwayElement, "ClearwayWidth", safeString(data.get("clearwayWidth")));
+                addTextElement(doc, runwayElement, "DisplacedThreshold", safeString(data.get("displacedThreshold")));
+                addTextElement(doc, runwayElement, "RESA", safeString(data.get("RESA")));
+                addTextElement(doc, runwayElement, "BlastProtection", safeString(data.getOrDefault("blastProtection", "500")));
+
+                Element clearedArea = doc.createElement("ClearedAndGradedArea");
+                addTextElement(doc, clearedArea, "Width", safeString(data.get("clearwayWidth")));
+                addTextElement(doc, clearedArea, "LengthBeyondRunway", "150"); // fallback
+                runwayElement.appendChild(clearedArea);
+
+                Element declaredDistances = doc.createElement("DeclaredDistances");
+                addTextElement(doc, declaredDistances, "TORA", safeString(data.get("length")));
+                addTextElement(doc, declaredDistances, "TODA", safeString(data.get("length")));
+                addTextElement(doc, declaredDistances, "ASDA", safeString(data.get("length")));
+                addTextElement(doc, declaredDistances, "LDA", safeString(data.get("length")));
+                runwayElement.appendChild(declaredDistances);
+
+                Element surfaceSlopes = doc.createElement("SurfaceSlopes");
+                addTextElement(doc, surfaceSlopes, "ALS", "50:1");
+                addTextElement(doc, surfaceSlopes, "TOCS", "50:1");
+                runwayElement.appendChild(surfaceSlopes);
+
+                if (data.containsKey("Obstacle type")) {
+                    Element obstacle = doc.createElement("Obstacle");
+                    addTextElement(doc, obstacle, "Name", safeString(data.get("Obstacle type")));
+                    addTextElement(doc, obstacle, "Distance", safeString(data.get("Obstacle distance")));
+                    addTextElement(doc, obstacle, "Height", safeString(data.get("Obstacle height")));
+                    runwayElement.appendChild(obstacle);
+                }
+            }
+
+            // Ask user to save
+
+
+            if (file != null) {
+                TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                Transformer transformer = transformerFactory.newTransformer();
+                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+                transformer.transform(new DOMSource(doc), new StreamResult(file));
+
+            } else {
+                System.out.println("cancelled");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("Failed to export airport from Firebase.");
+        }
+    }
+
+    // Helper method
+    private static String safeString(Object o) {
+        return (o != null) ? o.toString() : "";
+    }
 
     public void loadXML(File xmlFile) {
         try {
@@ -848,15 +1028,20 @@ public class MainControlController  implements Initializable  {
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(xmlFile);
             doc.getDocumentElement().normalize();
+            Element airportElement = (Element) doc.getElementsByTagName("Airport").item(0);
+            Element IDtElement = (Element) doc.getElementsByTagName("ID").item(0);
+
+            airport= airportElement.getAttribute("name");
 
             NodeList nList = doc.getElementsByTagName("Runway");
+
 
             runwayList.clear();
             for (int i = 0; i < nList.getLength(); i++ ) {
                 org.w3c.dom.Node nNode = nList.item(i);
                 if (nNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
                     Element eElement = (Element) nNode;
-
+                    String id = getTextContent(eElement, "ID");
                     String name = getTextContent(eElement, "Name");
                     int length = getIntContent(eElement, "Length");
                     int stripLength = getIntContent(eElement, "StripLength");
@@ -870,6 +1055,17 @@ public class MainControlController  implements Initializable  {
                     Runway runway = new Runway(name, length, stripLength, stopway, clearwayLength,
                             clearwayWidth, displacedThreshold, RESA);
                     NodeList list = doc.getElementsByTagName("ClearedAndGradedArea");
+                    Map<String, Object> runwayData = new HashMap<>();
+                    runwayData.put("id",id);
+                    runwayData.put("name", name);
+                    runwayData.put("length", length);
+                    runwayData.put("stripLength", stripLength);
+                    runwayData.put("stopway", stopway);
+                    runwayData.put("clearwayLength", clearwayLength);
+                    runwayData.put("clearwayWidth", clearwayWidth);
+                    runwayData.put("displacedThreshold", displacedThreshold);
+                    runwayData.put("RESA", RESA);
+                    runway.setID(id);
                     if (list.getLength() > 0) {
                         Element clearedArea = (Element) list.item(0);
 
@@ -886,14 +1082,207 @@ public class MainControlController  implements Initializable  {
                         runway.setClearedAndGradedWidth(widthValue);
                         runway.setClearedAndGradedLengthBeyondRunwayEnds(lengthValue);
                     }
+                    NodeList obstacles = doc.getElementsByTagName("Obstacle");
+                    if ( obstacles.getLength() > 0) {
+                        Element clearedArea = (Element)  obstacles.item(0);
+
+
+                        String obsName = clearedArea.getElementsByTagName("Name").item(0).getTextContent();
+
+
+                        String obstacleDistance = clearedArea.getElementsByTagName("Distance").item(0).getTextContent();
+                        int obstacleDistanceValue = Integer.parseInt(obstacleDistance );
+                        String obstacleHeight = clearedArea.getElementsByTagName("Height").item(0).getTextContent();
+                        int obstacleHeightValue = Integer.parseInt(obstacleHeight );
+
+                        Obstacle obstacle= ObstacleManager.getObstacleByName(obsName);
+                        System.out.println("HETETEA"+obstacle.toString());
+
+                        assert obstacle != null;
+                        obstacle.setDistance(obstacleDistanceValue);
+                        obstacle.setHeight(obstacleHeightValue);
+                        runwayData.put("Obstacle type", obsName);
+                        runwayData.put("Obstacle distance", obstacleDistanceValue);
+                        runwayData.put("Obstacle height", obstacleHeightValue);
+                        runway.setObstacle(obstacle);
+                    }
                    runwayList.add(runway);
+                    if(isRunwayListMatchingFirebase(airport)) {
+                        updateRunwaySelector();
+                    }else{
+                        exportAirportFromFirebaseToXML(airport,xmlFile);
+                        loadXML(xmlFile);
+                    }
+
                 }
             }
-            updateRunwaySelector();
+
+
             System.out.println("Loaded " + runwayList.size() + " runways from XML.");
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public boolean isRunwayListMatchingFirebase(String airportName) {
+        try {
+            CollectionReference runwaysRef = Firebase.getFirestore()
+                    .collection("airports")
+                    .document(airportName)
+                    .collection("runways");
+
+            List<QueryDocumentSnapshot> firebaseDocs = runwaysRef.get().get().getDocuments();
+
+            for (Runway localRunway : runwayList) {
+                System.out.println(localRunway.getID()+" aoiefhoaeifhn bbbbbbb");
+                boolean matchFound = false;
+                for (QueryDocumentSnapshot doc : firebaseDocs) {
+                    Map<String, Object> data = doc.getData();
+                    if (data == null) continue;
+
+                    String firebaseID = (String) data.get("id");
+                    if (firebaseID != null && firebaseID.equals(localRunway.getID())) {
+                        // IDs match, now verify important properties
+                        if (compareRunwayFields(localRunway, data)) {
+                            matchFound = true;
+                            break;
+                        }
+                        System.out.println(localRunway.getID()+" TOOO "+ firebaseID);
+                    }
+                }
+                if (!matchFound) {
+                    return false; // Couldn't find matching runway in Firebase
+                }
+            }
+
+            return true; // All runways match
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+
+            return false;
+        }
+    }
+
+    // Helper function to compare fields you care about
+    private boolean compareRunwayFields(Runway runway, Map<String, Object> data) {
+        try {
+            return
+                    runway.getName().equals(data.get("name")) &&
+                            runway.getLength() == Integer.parseInt(data.get("length").toString()) &&
+                            runway.getStripLength() == Integer.parseInt(data.get("stripLength").toString()) &&
+                            runway.getStopway() == Integer.parseInt(data.get("stopway").toString()) &&
+                            runway.getClearwayLength() == Integer.parseInt(data.get("clearwayLength").toString()) &&
+                            runway.getClearwayWidth() == Integer.parseInt(data.get("clearwayWidth").toString()) &&
+                            runway.getRESA() == Integer.parseInt(data.get("RESA").toString()) &&
+                            runway.getDisplacedThreshold() == Integer.parseInt(data.get("displacedThreshold").toString());
+            // You can also add more comparisons for obstacle info if needed
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public static void exportRunwayWithDialog(Runway runway, Stage stage) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save Runway XML");
+
+        // Suggest a default file name
+        fileChooser.setInitialFileName(runway.getName() + ".xml");
+
+        // Restrict to only .xml files
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("XML Files", "*.xml")
+        );
+
+        // Show save file dialog
+        File file = fileChooser.showSaveDialog(stage);
+
+        if (file != null) {
+            saveRunwayToXML(runway, file.getAbsolutePath());
+        } else {
+            System.out.println("cancelled.");
+        }
+    }
+    public static void saveRunwayToXML(Runway runway, String filePath) {
+        try {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // Root element: Airport
+            Document doc = docBuilder.newDocument();
+            Element airportElement = doc.createElement("Airport");
+            airportElement.setAttribute("name", "Generated Airport");
+            doc.appendChild(airportElement);
+
+            // Runways container
+            Element runwaysElement = doc.createElement("Runways");
+            airportElement.appendChild(runwaysElement);
+
+            // Runway element
+            Element runwayElement = doc.createElement("Runway");
+            runwaysElement.appendChild(runwayElement);
+
+            addTextElement(doc, runwayElement, "ID", runway.getID());
+            addTextElement(doc, runwayElement, "Name", runway.getName());
+            addTextElement(doc, runwayElement, "Length", String.valueOf(runway.getLength()));
+            addTextElement(doc, runwayElement, "StripLength", String.valueOf(runway.getStripLength()));
+            addTextElement(doc, runwayElement, "Stopway", String.valueOf(runway.getStopway()));
+            addTextElement(doc, runwayElement, "ClearwayLength", String.valueOf(runway.getClearwayLength()));
+            addTextElement(doc, runwayElement, "ClearwayWidth", String.valueOf(runway.getClearwayWidth()));
+            addTextElement(doc, runwayElement, "DisplacedThreshold", String.valueOf(runway.getDisplacedThreshold()));
+            addTextElement(doc, runwayElement, "RESA", String.valueOf(runway.getRESA()));
+            addTextElement(doc, runwayElement, "BlastProtection", String.valueOf(runway.getBlastProtection()));
+
+            // Cleared and Graded Area
+            Element clearedArea = doc.createElement("ClearedAndGradedArea");
+            addTextElement(doc, clearedArea, "Width", String.valueOf(runway.getClearedAndGradedWidth()));
+            addTextElement(doc, clearedArea, "LengthBeyondRunway", String.valueOf(runway.getClearedAndGradedLengthBeyondRunwayEnds()));
+            runwayElement.appendChild(clearedArea);
+
+            // Declared Distances
+            Element declaredDistances = doc.createElement("DeclaredDistances");
+            addTextElement(doc, declaredDistances, "TORA", String.valueOf(runway.getTORA()));
+            addTextElement(doc, declaredDistances, "TODA", String.valueOf(runway.getTODA()));
+            addTextElement(doc, declaredDistances, "ASDA", String.valueOf(runway.getASDA()));
+            addTextElement(doc, declaredDistances, "LDA", String.valueOf(runway.getLDA()));
+            runwayElement.appendChild(declaredDistances);
+
+            // Surface Slopes
+            Element surfaceSlopes = doc.createElement("SurfaceSlopes");
+            addTextElement(doc, surfaceSlopes, "ALS", "50:1");
+            addTextElement(doc, surfaceSlopes, "TOCS", "50:1");
+            runwayElement.appendChild(surfaceSlopes);
+
+            // Obstacle
+            if (runway.hasObstacle()) {
+                Element obstacle = doc.createElement("Obstacle");
+                addTextElement(doc, obstacle, "Name", runway.getObstacle().getName());
+                addTextElement(doc, obstacle, "Distance", String.valueOf(runway.getObstacle().getDistance()));
+                addTextElement(doc, obstacle, "Height", String.valueOf(runway.getObstacle().getHeight()));
+                runwayElement.appendChild(obstacle);
+            }
+
+            // Write the content into an XML file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes"); // pretty print
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(new File(filePath));
+
+            transformer.transform(source, result);
+
+
+        } catch (TransformerException | ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void addTextElement(Document doc, Element parent, String tagName, String textContent) {
+        Element element = doc.createElement(tagName);
+        element.appendChild(doc.createTextNode(textContent));
+        parent.appendChild(element);
     }
 
     // Helper method to safely get text content from XML elements
@@ -913,14 +1302,12 @@ public class MainControlController  implements Initializable  {
     }
 
     private static final double STOPWAY_SCALE_FACTOR = 10.0;
-    public double  getObstacleDistanceFromRunway() {
-
-        Rectangle stopwayRect = (Rectangle) runwayGroup.lookup("#runway");
-        if (stopwayRect == null) {
-            System.out.println("Stopway rectangle not found!");
+    public double getObstacleDistanceFromRunway() {
+        Rectangle runwayRect = (Rectangle) runwayGroup.lookup("#runway");
+        if (runwayRect == null) {
+            System.out.println("Runway rectangle not found!");
             return -1;
         }
-
 
         ImageView lastObstacle = getLastPlacedObstacle();
         if (lastObstacle == null) {
@@ -928,77 +1315,22 @@ public class MainControlController  implements Initializable  {
             return -1;
         }
 
-
-        Bounds stopwayBounds = stopwayRect.getBoundsInParent();
+        Bounds runwayBounds = runwayRect.getBoundsInParent();
         Bounds obstacleBounds = lastObstacle.getBoundsInParent();
 
+        double runwayStartX = runwayBounds.getMinX();
+        double runwayStartY = runwayBounds.getMinY();
 
-        double stopwayStartX = stopwayBounds.getMinX();
-        double stopwayStartY = stopwayBounds.getMinY();
+        double obstacleStartX = obstacleBounds.getMinX();
+        double obstacleStartY = obstacleBounds.getMinY();
 
+        double runwayAngle = runwayRect.getRotate();
 
-        double obstacleCenterX = (obstacleBounds.getMinX() + obstacleBounds.getMaxX()) / 2;
-        double obstacleCenterY = (obstacleBounds.getMinY() + obstacleBounds.getMaxY()) / 2;
+        double dx = obstacleStartX - runwayStartX;
+        double dy = obstacleStartY - runwayStartY;
 
-
-        double stopwayAngle = stopwayRect.getRotate();
-
-
-        double dx = obstacleCenterX - stopwayStartX;
-        double dy = obstacleCenterY - stopwayStartY;
-
-
-        double projectedDistance = dx * Math.cos(Math.toRadians(stopwayAngle)) +
-                dy * Math.sin(Math.toRadians(stopwayAngle));
-
-
-        double realDistance = projectedDistance / STOPWAY_SCALE_FACTOR;
-        realDistance+=lastObstacle.getFitHeight()/STOPWAY_SCALE_FACTOR;
-
-        System.out.println("Rendered Distance: " + projectedDistance + "px");
-        System.out.println("Real Distance: " + realDistance + " actual units");
-
-        return realDistance;
-    }
-
-    public double  getObstacleDistanceFromStopway() {
-
-        Rectangle stopwayRect = (Rectangle) runwayGroup.lookup("#stopway");
-        if (stopwayRect == null) {
-            System.out.println("Stopway rectangle not found!");
-            return -1;
-        }
-
-
-        ImageView lastObstacle = getLastPlacedObstacle();
-        if (lastObstacle == null) {
-            System.out.println("No obstacles found!");
-            return -1;
-        }
-
-
-        Bounds stopwayBounds = stopwayRect.getBoundsInParent();
-        Bounds obstacleBounds = lastObstacle.getBoundsInParent();
-
-
-        double stopwayStartX = stopwayBounds.getMinX();
-        double stopwayStartY = stopwayBounds.getMinY();
-
-
-        double obstacleCenterX = (obstacleBounds.getMinX() + obstacleBounds.getMaxX()) / 2;
-        double obstacleCenterY = (obstacleBounds.getMinY() + obstacleBounds.getMaxY()) / 2;
-
-
-        double stopwayAngle = stopwayRect.getRotate();
-
-
-        double dx = obstacleCenterX - stopwayStartX;
-        double dy = obstacleCenterY - stopwayStartY;
-
-
-        double projectedDistance = dx * Math.cos(Math.toRadians(stopwayAngle)) +
-                dy * Math.sin(Math.toRadians(stopwayAngle));
-
+        double projectedDistance = dx * Math.cos(Math.toRadians(runwayAngle)) +
+                dy * Math.sin(Math.toRadians(runwayAngle));
 
         double realDistance = projectedDistance / STOPWAY_SCALE_FACTOR;
 
@@ -1009,7 +1341,10 @@ public class MainControlController  implements Initializable  {
     }
 
 
-    // Helper method to safely parse integers from XML
+
+
+
+
     private int getIntContent(Element element, String tag) {
         try {
             return Integer.parseInt(getTextContent(element, tag));
@@ -1075,7 +1410,7 @@ public class MainControlController  implements Initializable  {
                         showError("Invalid Input", "Please enter valid obstacle details.");
                         return null;
                     }
-                    return new Obstacle(name, height, distance, "/images/car.png", 500);
+                    return new Obstacle(name, height, distance, "/images/topDown/car.png", 500);
 
                 } catch (NumberFormatException e) {
                     showError("Invalid Input", "Please enter valid numbers for Height and Distance.");
@@ -1131,6 +1466,10 @@ public class MainControlController  implements Initializable  {
 
     public void setRole(String role) {
         this.role = role;
+        if(!(isEditor()||isAdmin())){
+            addObstacleButton.setDisable(true);
+            obstacleComboBox.setDisable(true);
+        }
     }
 
     public String getPassword() {
