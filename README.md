@@ -30,13 +30,9 @@ A JavaFX application for visualizing runway configurations with support for dyna
 ---
 
 ## 🔨 Build the project
-To compile and package the project, run:
+To compile and run the project, run:
 ```bash
-mvn clean package -P shade
-java --module-path /path/to/javafx-sdk-21/lib \
-     --add-modules javafx.controls,javafx.fxml,javafx.media \
-     -jar target/Runway-1.0-SNAPSHOT-shaded.jar
+mvn clean package
+java -jar target/Runway-1.0-SNAPSHOT-all.jar
 ```
--Recommended doesnt require download of SDKs
-```bash
-mvn javafx:run
+
