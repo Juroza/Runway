@@ -47,7 +47,7 @@ public class CreateNewUserController {
             stage.close();
         } else {
 
-            errorLabel.setText("Invalid user name or password！");
+            errorLabel.setText("Invalid information！");
             errorLabel.setTextFill(Color.RED);
         }
     }
