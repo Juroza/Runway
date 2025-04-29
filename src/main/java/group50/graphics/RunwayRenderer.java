@@ -136,7 +136,17 @@ public class RunwayRenderer {
             double height = obstacleImage.getHeight();
             Rectangle obstacle= new Rectangle(runwayInput.getObstacle().getScale(),(obstacleImage.getHeight() / obstacleImage.getWidth()) * runwayInput.getObstacle().getScale());
             obstacle.setFill(obstaclePattern);
-            obstacle.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10);
+            int distance= runwayInput.getObstacle().getDistance();
+            int offset= (int) Math.max(obstacle.getWidth(),obstacle.getHeight());
+            if(distance>runwayInput.getLength()/2){
+                distance+=offset;
+                System.out.println(runwayInput.getObstacle().getDistance());
+                System.out.println("OFFEST: "+offset);
+                obstacle.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10+offset);
+            }else{
+                distance-=offset;
+                obstacle.setLayoutX(runwayRect.getLayoutX()+runwayInput.getObstacle().getDistance()*10-offset);
+            }
             System.out.println("RUNWAY RENDERED OBSTACLE X: "+obstacle.getLayoutX()+" TRUE DISTANCE: "+runwayInput.getObstacle().getDistance() );
             obstacle.setLayoutY(runwayRect.getLayoutY() + (runwayRect.getHeight() / 2) - (obstacle.getHeight() / 2));
             obstacle.setRotate(-90);

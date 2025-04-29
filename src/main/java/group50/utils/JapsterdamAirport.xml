@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Airport name="Japsterdam Airport">
+<Airport name="Japsterdam">
   <Runways>
     <Runway>
       <ID>aX02FW0FW</ID>
@@ -26,11 +26,6 @@
         <ALS>50:1</ALS>
         <TOCS>50:1</TOCS>
       </SurfaceSlopes>
-      <Obstacle>
-        <Name>Car</Name>
-        <Distance>3001</Distance>
-        <Height>13</Height>
-      </Obstacle>
     </Runway>
     <Runway>
       <ID>aX02FW0FW2</ID>

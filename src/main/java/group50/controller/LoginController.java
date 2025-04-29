@@ -61,8 +61,9 @@ public class LoginController {
             Parent root = loader.load();
 
             MainControlController controller = loader.getController();
-            controller.setUserRole(role);
             controller.setUsername(username);
+            controller.setUserRole(role);
+
             controller.setRole(role);
 
             Scene scene = new Scene(root, 1980, 1080);

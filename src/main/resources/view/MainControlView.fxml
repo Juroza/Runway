@@ -169,6 +169,7 @@
                                    <ComboBox fx:id="obstacleComboBox" promptText="Choose an Obstacle" style="-fx-pref-width: 250px; -fx-pref-height: 40px; -fx-font-size: 14px;" />
                                    <Button fx:id="addObstacleButton" mnemonicParsing="false" onAction="#handleAddObstacle" styleClass="wii-button" text="Add Obstacle" />
                                </HBox>
+                              <Button fx:id="dataViewButton" mnemonicParsing="false" onAction="#viewData" styleClass="wii-button"  text="View Comparison Data" />
 
                                <HBox alignment="CENTER_LEFT" spacing="10">
                                  <Button fx:id="resetViewButton" mnemonicParsing="false" onAction="#handleResetView" styleClass="wii-button" text="Reset View" />

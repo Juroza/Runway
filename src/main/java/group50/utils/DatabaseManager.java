@@ -53,12 +53,16 @@ public class DatabaseManager {
         }
     }
 
-    public static void addUser(String username, String password, String role) {
+    public static boolean addUser(String username, String password, String role) {
+        if(username.isEmpty()||role==null||password.isEmpty()){
+            return false;
+        }
         Map<String, Object> userData = new HashMap<>();
         userData.put("username",username);
         userData.put("password",password);
         userData.put("role",role);
         Firebase.writeData("users",username,userData);
+        return true;
     }
 
     public static boolean validateUser(String username, String password) {

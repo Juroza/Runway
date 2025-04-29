@@ -13,6 +13,13 @@
         <maven.compiler.target>19</maven.compiler.target>
         <javafx.version>21.0.6</javafx.version>
     </properties>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
+
 
     <dependencies>
         <!-- JavaFX -->
@@ -80,7 +87,6 @@
             <artifactId>firebase-admin</artifactId>
             <version>9.2.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
