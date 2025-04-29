@@ -8,9 +8,8 @@ import group50.model.Runway;
 import java.awt.*;
 import java.io.*;
 
+import group50.utils.Notifer;
 import javafx.util.Duration;
-import tray.notification.NotificationType;
-import tray.notification.TrayNotification;
 import group50.network.Firebase;
 import group50.utils.PDFGenerator;
 import javafx.scene.Cursor;
@@ -511,10 +510,17 @@ public class MainControlController  implements Initializable  {
                     replaceRunwayFromFirebaseData(dc.getDocument().getData());
 
                     Platform.runLater(() -> {
-                        TrayNotification tray = new TrayNotification();
-                        tray.setTitle("UPDATE");
-                        tray.setMessage("Runway has been updated");
-                        tray.showAndDismiss(Duration.seconds(2));
+                        Notifer notifer= new Notifer();
+                        try {
+
+                            notifer.displayTray("Runway has been updated");
+                        } catch (AWTException e) {
+                            System.out.println("notif e");
+                            throw new RuntimeException(e);
+                        } catch (IOException e) {
+                            System.out.println("notif e");
+                            throw new RuntimeException(e);
+                        }
                     });
                 }
                 long timeVal = (long) timer;
@@ -523,13 +529,22 @@ public class MainControlController  implements Initializable  {
                     case ADDED:
                     case MODIFIED:
                     case REMOVED:
+                        System.out.println("HERE FREDDY");
+                        System.out.println(timeVal);
                         replaceRunwayFromFirebaseData(dc.getDocument().getData());
 
                         Platform.runLater(() -> {
-                            TrayNotification tray = new TrayNotification();
-                            tray.setTitle("UPDATE");
-                            tray.setMessage("Runway has been updated");
-                            tray.showAndDismiss(Duration.seconds(2));
+                            Notifer notifer= new Notifer();
+                            try {
+
+                                notifer.displayTray("Runway has been updated");
+                            } catch (AWTException e) {
+                                System.out.println("notif e");
+                                throw new RuntimeException(e);
+                            } catch (IOException e) {
+                                System.out.println("notif e");
+                                throw new RuntimeException(e);
+                            }
                         });
                         break;
                 }
