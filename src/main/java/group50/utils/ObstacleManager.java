@@ -29,7 +29,7 @@ public class ObstacleManager {
                 return obstacle;
             }
         }
-        return null; // or throw an exception if you want
+        return null;
     }
 
 

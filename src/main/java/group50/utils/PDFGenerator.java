@@ -197,7 +197,7 @@ public class PDFGenerator {
         int stripEnd = 60;
         int tocsSlope = 50;
 
-        // No obstacle present
+
         if (obstacle == null || obstacle.getHeight() == 0) {
             return tora >= requiredTakeoffDistance;
         }

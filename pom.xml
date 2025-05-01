@@ -22,7 +22,6 @@
 
 
     <dependencies>
-        <!-- JavaFX -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -38,8 +37,6 @@
             <artifactId>javafx-media</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-
-        <!-- Netty TCNative (Ensures gRPC Works on macOS ARM64, Intel, and Linux) -->
         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-tcnative-boringssl-static</artifactId>
@@ -58,8 +55,6 @@
             <version>2.0.59.Final</version>
             <classifier>linux-x86_64</classifier>
         </dependency>
-
-        <!-- gRPC Dependencies (Updated to Latest) -->
         <dependency>
             <groupId>io.grpc</groupId>
             <artifactId>grpc-netty-shaded</artifactId>
@@ -90,10 +85,9 @@
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-            <version>2.0.30</version> <!-- or latest -->
+            <version>2.0.30</version>
         </dependency>
 
-        <!-- Logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -105,7 +99,6 @@
             <version>2.20.0</version>
         </dependency>
 
-        <!-- JUnit (For Testing) -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -118,7 +111,6 @@
 
     <build>
         <plugins>
-            <!-- Shade Plugin (Ensures Dependencies Are Bundled into JAR) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -153,7 +145,6 @@
                 </executions>
             </plugin>
 
-            <!-- Java Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -164,8 +155,6 @@
                     <release>19</release>
                 </configuration>
             </plugin>
-
-            <!-- JavaFX Maven Plugin -->
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>

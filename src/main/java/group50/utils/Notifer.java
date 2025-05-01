@@ -51,7 +51,6 @@ public class Notifer {
                 e.printStackTrace();
             }
         }
-        //Obtain only one instance of the SystemTray object
 
     }
 }

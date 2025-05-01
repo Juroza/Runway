@@ -26,32 +26,6 @@ public class Firebase {
                     .setProjectId("runway-c8831")
                     .build();
             FirebaseApp.initializeApp(options);
-
-            Firestore db = Firebase.getFirestore();
-            CollectionReference usersRef = db.collection("users");
-
-            usersRef.addSnapshotListener((snapshots, error) -> {
-                if (error != null) {
-                    System.err.println("❌ Listen failed: " + error);
-                    return;
-                }
-
-                for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                    switch (dc.getType()) {
-                        case ADDED:
-                            System.out.println("🆕 New user: " + dc.getDocument().getData());
-                            break;
-                        case MODIFIED:
-                            System.out.println("✏️ Modified user: " + dc.getDocument().getData());
-                            break;
-                        case REMOVED:
-                            System.out.println("🗑️ Removed user: " + dc.getDocument().getData());
-                            break;
-                    }
-                }
-            });
-
-
             return true;
         } catch (IOException e) {
             e.printStackTrace();
